@@ -41,6 +41,12 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 CACHE = os.path.join(DATA_DIR, "svr_base_liquidations.json.gz")
 
 RPCS = ["https://mainnet.base.org", "https://base.drpc.org"]  # оба archive-OK (проверено)
+# для обогащения (receipt/eth_call): замерено 2026-07-05 — publicnode прунит старые
+# receipts (NULL) и 403 на архивный eth_call, drpc в 429-бане; mainnet.base.org и
+# tenderly-gateway отвечают за ~0.2 с и держат архив
+RPCS_CALL = ["https://gateway.tenderly.co/public/base", "https://mainnet.base.org"]
+# линейный таймстемп: Base ровно 2.0 с/блок (замерено на 1M блоков, 2026-07-05)
+REF_BLOCK, REF_TS, SEC_PER_BLOCK = 48_233_828, 1_783_257_003, 2
 POOL = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5"
 ORACLE = "0x2Cc0Fc26eD4563A5ce5e8bdcfe1A2878676Ae156"
 WETH = "0x4200000000000000000000000000000000000006"
@@ -55,6 +61,11 @@ BLOCKS_DEFAULT = 4_540_000  # ~105 дней по 2 с/блок — покрыв�
 
 
 # -- чистые функции ---------------------------------------------------------
+
+def block_ts(block: int) -> int:
+    """Таймстемп из номера блока (Base — фикс 2 с/блок)."""
+    return REF_TS - (REF_BLOCK - block) * SEC_PER_BLOCK
+
 
 def classify_receipt(logs: list[dict]) -> dict:
     """SVR-ликвидация = в receipt есть SecondaryRoundIdUpdated; бид/победитель —
@@ -84,12 +95,21 @@ def solver_fields(data_hex: str) -> dict:
 def scan() -> None:
     blocks = int(sys.argv[2]) if len(sys.argv) > 2 else BLOCKS_DEFAULT
     rpc = Rpc(urls=RPCS)
-    head = rpc.block_number()
-    lo = head - blocks
-    print(f"window: {lo}..{head}", file=sys.stderr)
-    liq = get_logs_chunked(rpc, [POOL], [TOPIC_LIQ], lo, head, chunk=10_000,
-                           on_progress=lambda d, t, n: (d % 500_000 < 10_000) and print(
-                               f"  liq: {d}/{t} logs={n}", file=sys.stderr))
+    logs_cache = CACHE.replace(".json.gz", "_rawlogs.json.gz")
+    if os.path.exists(logs_cache):  # промежуточный кэш — не пересканировать 105 дней логов
+        with gzip.open(logs_cache, "rt") as f:
+            saved = json.load(f)
+        lo, head, liq = saved["window"][0], saved["window"][1], saved["logs"]
+        print(f"logs from cache: {len(liq)} ({lo}..{head})", file=sys.stderr)
+    else:
+        head = rpc.block_number()
+        lo = head - blocks
+        print(f"window: {lo}..{head}", file=sys.stderr)
+        liq = get_logs_chunked(rpc, [POOL], [TOPIC_LIQ], lo, head, chunk=10_000,
+                               on_progress=lambda d, t, n: (d % 500_000 < 10_000) and print(
+                                   f"  liq: {d}/{t} logs={n}", file=sys.stderr))
+        with gzip.open(logs_cache, "wt") as f:
+            json.dump({"window": [lo, head], "logs": liq}, f)
     print(f"liquidation logs: {len(liq)}", file=sys.stderr)
 
     by_tx: dict[str, dict] = {}
@@ -101,30 +121,51 @@ def scan() -> None:
     events = sorted(by_tx.values(), key=lambda r: r["block"])
     print(f"liquidation txs: {len(events)}", file=sys.stderr)
 
+    # резюм: подтянуть уже обогащённые события из частичного кэша (по txHash)
+    done: dict[str, dict] = {}
+    if os.path.exists(CACHE):
+        with gzip.open(CACHE, "rt") as f:
+            prev = json.load(f)
+        done = {e["txHash"]: e for e in prev.get("events", []) if "timestamp" in e}
+        print(f"resume: {len(done)} events already enriched", file=sys.stderr)
+
+    def checkpoint():
+        with gzip.open(CACHE, "wt") as f:
+            json.dump({"window": [lo, head], "events": events, "partial": True}, f)
+
+    rpc_call = Rpc(urls=RPCS_CALL, backoff_429=0.4)  # tenderly без лимитов; base.org 429-ит серии
     dec_cache: dict[str, int] = {}
     for i, ev in enumerate(events):
-        rec = rpc.receipt(ev["txHash"])
+        if ev["txHash"] in done:
+            ev.update(done[ev["txHash"]])
+            continue
+        if i % 100 == 99:
+            checkpoint()
+        rec = rpc_call.receipt(ev["txHash"])
+        if rec is None:  # publicnode может не отдать старый receipt — архивный фолбэк
+            rec = rpc.receipt(ev["txHash"])
+        if rec is None:
+            ev.update({"is_svr": False, "skip": "no_receipt"})
+            continue
         cls = classify_receipt(rec["logs"])
-        # SolverTxResult в data: bidToken(word0), bidAmount(word1) — поправка
         ev.update(cls)
         ev["tx_from"] = rec["from"].lower()
         ev["gas_wei"] = int(rec["gasUsed"], 16) * int(rec["effectiveGasPrice"], 16)
-        blk = rpc.get_block(ev["block"])
-        ev["timestamp"] = int(blk["timestamp"], 16)
+        ev["timestamp"] = block_ts(ev["block"])
         tag = hex(ev["block"])
         try:
             prices, decs = {}, {}
             for c in ev["calls"]:
                 for a in (c["collateralAsset"].lower(), c["debtAsset"].lower()):
                     if a not in prices:
-                        r = rpc.eth_call(ORACLE, SEL_GET_ASSET_PRICE + a[2:].rjust(64, "0"), tag)
+                        r = rpc_call.eth_call(ORACLE, SEL_GET_ASSET_PRICE + a[2:].rjust(64, "0"), tag)
                         prices[a] = int(r, 16)
                     if a not in dec_cache:
-                        dec_cache[a] = int(rpc.eth_call(a, SEL_DECIMALS), 16)
+                        dec_cache[a] = int(rpc_call.eth_call(a, SEL_DECIMALS), 16)
                     decs[a] = dec_cache[a]
             from analysis.oev_svr import event_gross_usd
             ev["gross_usd"] = event_gross_usd(ev["calls"], prices, decs)
-            r = rpc.eth_call(ORACLE, SEL_GET_ASSET_PRICE + WETH[2:].rjust(64, "0"), tag)
+            r = rpc_call.eth_call(ORACLE, SEL_GET_ASSET_PRICE + WETH[2:].rjust(64, "0"), tag)
             ev["eth_usd"] = int(r, 16) / 1e8
         except Exception as e:
             ev["gross_usd"] = None
@@ -136,7 +177,7 @@ def scan() -> None:
     os.makedirs(DATA_DIR, exist_ok=True)
     with gzip.open(CACHE, "wt") as f:
         json.dump({"window": [lo, head], "events": events}, f)
-    n_svr = sum(1 for e in events if e["is_svr"])
+    n_svr = sum(1 for e in events if e.get("is_svr"))
     print(f"cached {len(events)} liq txs ({n_svr} SVR) -> {CACHE}")
 
 

@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+
+data/hyperlend_liqcalls_raw.json
+data/hyperlend_liqs_decoded.json
+data/hyperlend_isolated_liqs.json

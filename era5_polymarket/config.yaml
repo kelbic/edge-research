@@ -1,0 +1,44 @@
+# era5_polymarket / Direction 9 — config
+# STATUS: research only. NO live trading is authorized — no edge has been proven on data.
+# Phases 3-4 (bot, capital) stay gated behind a GO verdict per research/exploration_log.md.
+
+meta:
+  direction: 9
+  parent: edge-research (STATE.md)
+  status: research           # research | paper | live  (stays 'research' until GO)
+
+# --- data sources (all free, no auth) ---
+sources:
+  gamma_api:   https://gamma-api.polymarket.com     # market discovery (tag_id)
+  clob_api:    https://clob.polymarket.com          # prices-history (T-Xh)
+  open_meteo:  https://archive-api.open-meteo.com/v1/archive   # weather ground truth
+  fred_cpi:    https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCNS  # actual CPI (NSA)
+  cleveland_nowcast: https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting  # vintage archive TBD
+
+tags:
+  weather: 84            # DONE -> NO
+  temperature: 104615
+  macro_indicators: 102000   # target #1 (CPI/inflation/jobs/GDP/Fed)
+  gdp: 370
+
+# --- backtest gate (pre-registered, do not relax silently) ---
+verdict_rule:
+  go_mean_pnl_min: 0.03      # +3% net/trade
+  go_median_min: 0.0
+  go_subsets_positive_min: 2
+  spread_assumption: 0.02
+
+# --- strategy params (INERT until status=live; here for completeness only) ---
+strategy:
+  capital_total_usd: 10000
+  max_position_per_market_usd: 200
+  kelly_fraction: 0.5
+  min_edge_to_enter: 0.03
+  taker_fee: 0.0015
+  maker_fee: 0.0
+
+# Polymarket API keys intentionally absent — populate ONLY when a GO verdict exists.
+polymarket:
+  key: null
+  secret: null
+  passphrase: null

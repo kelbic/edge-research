@@ -1,0 +1,7 @@
+# regenerable caches (large / many small files)
+data/events_tag84.json
+data/prices/
+__pycache__/
+*.pyc
+# cloned public repo (reproducible; see external/kelbic_review.md for the analysis)
+external/kelbic_weather_edge/

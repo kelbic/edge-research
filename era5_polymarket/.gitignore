@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 # cloned public repo (reproducible; see external/kelbic_review.md for the analysis)
 external/kelbic_weather_edge/
+
+# CPI backtest caches (regenerable)
+data/trades/
+data/macro_tag102000.json
+data/fred_cpiaucns.json

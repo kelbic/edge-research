@@ -90,6 +90,62 @@ GT/BUCKET parser from `verify_weather_no.py`, apply the pre-registered verdict r
 | # | Topic | Verdict | Note |
 |---|---|---|---|
 | — | Weather (temperature) | **NO** | Phase 0.5, primary-data confirmed. Gross edge ≈ 0 even w/ perfect forecast. |
-| 1 | US CPI / inflation buckets | **PENDING backtest** | Sole Gate-0 survivor with open E2. Spec above. |
+| 1 | US CPI / inflation buckets | **NO** (naive public nowcast) — 1 live residual | See results below. Market well-calibrated (Brier 0.09); both year-subsets negative. YoY perfect-foresight ceiling high → Cleveland Fed nowcast = the one untested lever. |
 | 2 | GDP buckets (intl) | queued | smaller N; run if #1 informative. |
 | — | MLB / BTC / ETH / SpaceX | NO at screen | E2 or E4, see table. |
+
+## CPI backtest — RESULT (2026-07-06)
+
+`scripts/backtest_cpi.py`. Data path solved: CLOB `prices-history` is pruned for markets
+older than ~2 weeks, but **`data-api.polymarket.com/trades` retains full trade history** →
+reconstruct pre-release price from real trades. **N=153 usable US CPI bucket markets**, 13
+distinct release months (2025-03 … 2026-05). Entry = VWAP of trades in [endDate−3d, endDate−1d]
+(pre-release; each trade normalized to YES-equivalent — the `/trades` feed mixes YES+NO legs, a
+bug that first produced impossible +31%/trade until fixed). Outcome = settlement. Signal = a
+no-lookahead **public seasonal-MoM nowcast** from FRED CPIAUCNS (11/12 months known for YoY).
+
+**Market self-calibration (the decisive diagnostic):** pre-release price is **well-calibrated** —
+realized-YES rises monotonically 0.02 → 1.00 across price deciles; **Brier = 0.092** (vs 0.25
+coin-flip). The market already prices public information efficiently.
+
+**Public-nowcast strategy (the pre-registered test):**
+
+| Subset | mean | median | hit | gross |
+|---|---|---|---|---|
+| ALL (n=153) | −2.05% | −3.48% | 41% | −0.05% |
+| YoY (79) | +1.51% | −3.17% | 47% | +3.51% |
+| MoM (74) | −5.84% | −4.46% | 34% | −3.84% |
+| by year 2025 (99) | −0.1% | −3.3% | 45% | — |
+| by year 2026 (54) | −5.6% | −4.0% | 31% | — |
+
+**Verdict = NO** per pre-registered rule: gross ≈ 0, net negative after spread; **both year-subsets
+negative** (fails ≥2-positive-subsets); YoY has +mean but −median (outlier-driven, unstable — same
+trap as weather's GT +8.73%). YoY-by-year confirms instability: 2025 +6.0%/+5.6% but 2026
+−5.5%/−3.6% = one good year, one bad = noise.
+
+**Perfect-foresight ceiling (reference, not achievable):** YoY **+15.6% mean / +8.2% median /
+hit 80%** (MoM only −4.4%). → the YoY bucket markets *are* exploitable IF one can nowcast YoY CPI
+materially better than a naive seasonal model.
+
+### The one live residual (conditional, not GO)
+
+YoY inflation buckets: naive nowcast fails, but the perfect-foresight ceiling is high (+15.6%) and
+YoY needs only a 1-month MoM nowcast (11/12 months public). The **untested lever** is a
+professional nowcast — **Cleveland Fed inflation nowcasting** (~0.1pp MoM skill vs my ~0.2pp
+seasonal) — which sits between naive (~0) and perfect (+15.6%). Blocker: its **vintage archive**
+(nowcast-as-of-date) is not cleanly downloadable (page 403s WebFetch; no FRED series). This is a
+Gate-1-style follow-up, analogous to the parent program's `prepare-tooling` verdicts — **not a
+GO**. Absent that data, CPI stands at **NO** for a public-data retail modeler.
+
+**Structural read (confirms lattice mode 6):** on Polymarket the pre-release macro market is
+calibrated to public info; the only escape is a signal genuinely better than public — which for
+macro means competing with professional nowcasters, and even *perfect* foresight nets only ~+4–6%
+mean after spread. Same shape as weather (MM = the model), slightly less commoditized on YoY.
+
+## Program status after Direction 9
+
+Weather NO (primary data) + CPI NO (primary data, 1 conditional residual). Prediction-market
+topics screened: weather, CPI, MLB, BTC/ETH, SpaceX — **no GO**. Remaining queued topic (GDP intl)
+shares the CPI structure and is lower-liquidity; the residual worth any further spend is
+**Cleveland-Fed-nowcast on YoY CPI buckets**, gated on obtaining the nowcast vintage archive.
+Bot/capital (Phases 3-4) remain frozen — no GO.

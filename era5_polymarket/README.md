@@ -12,7 +12,7 @@ capital until edge is proven on data, honest NO cheaper than false GO.**
 | 0 — Discovery (Polymarket weather markets) | ✅ Gamma tag_id=84 discovery working; sample cached `data/events_tag84.json` |
 | 0.5 — Review kelbic/Polymarket-weather-edge-research | ✅ `external/kelbic_review.md` |
 | 1–2 — Weather features/model/backtest | ⏭️ **SKIPPED** — kelbic already proved NO; independently confirmed |
-| 5 — Alternative topics | 🔬 screen done; **CPI/inflation** is sole Gate-0 survivor, backtest pending |
+| 5 — Alternative topics | 🔬 screen done; **CPI/inflation** backtested → **NO** (1 conditional residual) |
 | 3–4 — Bot / live capital | 🔒 GATED behind a GO verdict (none yet) |
 
 ## Headline result so far
@@ -43,12 +43,26 @@ E1/E4/E5, died on **E2** (forecasting is commoditized). Screening the plan's can
 
 Full log + pre-registered criteria: `research/exploration_log.md`.
 
-## Next executable step
+## CPI/inflation backtest — done → NO (`scripts/backtest_cpi.py`)
 
-CPI/inflation bucket backtest. Data taps de-risked: FRED actual CPI ✅, CLOB pre-release price ✅
-(**anchor to BLS release date, not endDate**), Cleveland Fed nowcast **vintage archive = the open
-dependency** (needed to avoid lookahead). Build `scripts/backtest_cpi.py` reusing the CLOB client
-+ GT/BUCKET parser from `verify_weather_no.py`; apply the pre-registered +3% / stable verdict rule.
+N=153 US CPI bucket markets (2025-03…2026-05). Pre-release price reconstructed from real trades
+(`data-api/trades`, since CLOB prices-history is pruned >~2wk). Signal = no-lookahead public
+seasonal nowcast (FRED).
+
+- **Market is well-calibrated** (Brier 0.092; realized-YES monotonic 0.02→1.00).
+- **Public-nowcast strategy: NO** — gross ≈ 0 (−0.05%), net −2.05%, **both year-subsets negative**.
+- **Perfect-foresight ceiling: YoY +15.6% / MoM −4.4%** — YoY buckets *are* exploitable only with a
+  materially-better-than-naive nowcast.
+
+**One conditional residual (not GO):** a professional nowcast — **Cleveland Fed** — on YoY buckets,
+which sits between naive (~0) and perfect (+15.6%). Blocked on its vintage archive (403 / no FRED
+series). This is the only lever worth further spend on prediction markets.
+
+## Direction-9 conclusion
+
+Prediction markets (weather, CPI, MLB, BTC/ETH, SpaceX) — **no GO**; lattice mode-6 confirmed with
+primary data. The pre-release market prices public info efficiently; the only escape is a signal
+better than public, and even *perfect* foresight nets ~+4–6% mean after spread. Bot/capital frozen.
 
 ## Layout
 

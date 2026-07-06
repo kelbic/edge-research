@@ -95,6 +95,19 @@ MarketCreated((uint256,address,address,(address,uint256,uint256,address)[],uint2
   Midnight-ликвидаторов не найдено. `midnight-sdk` — только offer-флоу.
   **Поле реально пустое** — тулинг под maturity-класс не написан никем.
 
+## 3b. Разворотный пункт закрыт: post-maturity ликвидация permissionless-capable [P: код]
+
+Проверено по Midnight.sol @336b924 (строки 636–637): `liquidatorGate`-проверка —
+**единый require ДО ветки `postMaturityMode`**, т.е. одинаково гейтит обычную и
+post-maturity ликвидацию. При `market.liquidatorGate == address(0)` — **полностью
+permissionless** (любой `msg.sender`, включая post-maturity). Гейт опционален
+пер-рынок (immutable, часть id, задаётся создателем рынка); протокол НЕ форсирует
+дефолтный гейт. Вывод для «окно vs мёртво»: **не структурно закрыто** — окно живо
+для {read-only, $0}, ЕСЛИ рынки деплоятся с gate=0 (ожидаемо для permissionless-
+Morpho-стиля), и мертво-для-нас, если кураторы ставят KYC-гейт. Это эмпирический
+вопрос деплоя, не кода → усиливает monitoring (механизм нас не исключает), не
+переводит в prepare-tooling (рынков нет).
+
 ## 4. Вердикт по pre-registered критериям B: **monitoring**
 
 Механика не-аукционная (FCFS + тайминг-рамп) — киллер режима 1 НЕ сработал;

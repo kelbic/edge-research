@@ -5,15 +5,20 @@ Goal: find a Polymarket topic with a real, retail-scale forecast edge and (only 
 build a bot for $2–10k. **Discipline inherited from parent: Gate-0 first, read-only, zero
 capital until edge is proven on data, honest NO cheaper than false GO.**
 
-## Status @ 2026-07-05
+## Status @ 2026-07-06 — ❄️ FROZEN: EDGE NOT FOUND
 
 | Phase | State |
 |---|---|
-| 0 — Discovery (Polymarket weather markets) | ✅ Gamma tag_id=84 discovery working; sample cached `data/events_tag84.json` |
-| 0.5 — Review kelbic/Polymarket-weather-edge-research | ✅ `external/kelbic_review.md` |
-| 1–2 — Weather features/model/backtest | ⏭️ **SKIPPED** — kelbic already proved NO; independently confirmed |
-| 5 — Alternative topics | 🔬 screen done; **CPI/inflation** backtested → **NO** (1 conditional residual) |
-| 3–4 — Bot / live capital | 🔒 GATED behind a GO verdict (none yet) |
+| 0 — Discovery (Polymarket weather markets) | ✅ Gamma tag_id=84 discovery working |
+| 0.5 — Review kelbic/Polymarket-weather-edge-research | ✅ `external/kelbic_review.md` — NO, confirmed |
+| 1–2 — Weather features/model/backtest | ⏭️ SKIPPED — NO proven |
+| 5 — Alternative topics | ✅ screen + CPI backtest done → **NO** (weather/CPI/MLB/BTC/SpaceX all NO) |
+| 3–4 — Bot / live capital | ⛔ NOT BUILT — no GO |
+
+**Result frozen (user, 2026-07-06): no monetizable retail forecast-edge found on Polymarket
+prediction markets.** One un-closed residual (not reopened): a professional Cleveland Fed nowcast
+on YoY CPI buckets — gated on its vintage archive and still capped by the ~2% spread. See
+`../STATE.md` → "Направление 9 · ЗАМОРОЗКА".
 
 ## Headline result so far
 

@@ -149,3 +149,13 @@ topics screened: weather, CPI, MLB, BTC/ETH, SpaceX — **no GO**. Remaining que
 shares the CPI structure and is lower-liquidity; the residual worth any further spend is
 **Cleveland-Fed-nowcast on YoY CPI buckets**, gated on obtaining the nowcast vintage archive.
 Bot/capital (Phases 3-4) remain frozen — no GO.
+
+---
+
+## ❄️ FROZEN (2026-07-06): edge not found
+
+User froze Direction 9. Topics screened by the pre-registered filter: weather, CPI, MLB, BTC/ETH,
+SpaceX — **no GO**. Weather & CPI carried to full primary-data backtests (both NO). Lattice mode-6
+confirmed for prediction markets. Sole un-closed residual (not reopened): Cleveland Fed nowcast on
+YoY CPI buckets — reopen only with cheap vintage-nowcast access AND ≥+3% net / median≥0 on ≥2
+subsets. Bot/capital not built. Parameters not relaxed further.

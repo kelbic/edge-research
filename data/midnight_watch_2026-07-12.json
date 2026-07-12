@@ -1,0 +1,32 @@
+{
+ "cache_head": 48522417,
+ "gate": {
+  "n_markets": 42,
+  "gate0": 42,
+  "gated": 0,
+  "gated_frac": 0.0
+ },
+ "oracles": {
+  "n_oracles": 11,
+  "oev_oracles": []
+ },
+ "addresses_ts": {
+  "midnight_addrs": {
+   "midnight": "0xAdedD8ab6dE832766Fedf0FaC4992E5C4D3EA18A",
+   "midnightBundles": "0x091183d729BE9f808c212b475E387A12E67850A7",
+   "midnightMempool": "0xdD6DCE32e21f7b020898a8258dA37355b4017993"
+  },
+  "matches_deploy": true,
+  "hash": "0xc95dedfa0d3d1a19"
+ },
+ "adapter_wip": true,
+ "audits_draft": {
+  "files": [
+   "2026-04-07-spearbit-DRAFT.pdf",
+   "2026-05-21-blackthorn-DRAFT.pdf",
+   "2026-05-21-trustsec-DRAFT.pdf"
+  ],
+  "n": 3,
+  "all_draft": true
+ }
+}

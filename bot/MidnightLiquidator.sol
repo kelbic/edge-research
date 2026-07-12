@@ -69,20 +69,23 @@ contract MidnightLiquidator is ILiquidateCallback {
 
     /// @notice Инициировать post-maturity ликвидацию. Бот считает repaidUnits, путь
     /// свопа и minLoanOut (= repaidUnits + minProfit) офчейн (M-T2 + realized-net гард).
-    /// @param market       Market-структура рынка (из toMarket(id)/кэша).
+    /// Market тянется on-chain из id (toMarket) ⇒ бот шлёт только id+скаляры (простой
+    /// calldata, нечего рассинхронизировать с реальным стейтом рынка).
+    /// @param id           id рынка (bytes32).
     /// @param collIndex    индекс сейзимого коллатерала.
     /// @param repaidUnits  сколько долга гасим (post-maturity RCF off ⇒ до всей позиции).
     /// @param borrower     заёмщик.
     /// @param swapPath     Uniswap-путь packed (collateral fee ... loanToken).
     /// @param minLoanOut   мин. выручка свопа в loan-wei (гард: ≥ repaidUnits + minProfit).
     function runLiquidation(
-        Market calldata market,
+        bytes32 id,
         uint256 collIndex,
         uint256 repaidUnits,
         address borrower,
         bytes calldata swapPath,
         uint256 minLoanOut
     ) external onlyOwner returns (uint256 seized, uint256 repaid) {
+        Market memory market = MIDNIGHT.toMarket(id);
         _inLiquidation = true;
         bytes memory data = abi.encode(swapPath, minLoanOut);
         // seizedAssets=0 ⇒ Midnight сам считает seize из repaidUnits·lif(t);

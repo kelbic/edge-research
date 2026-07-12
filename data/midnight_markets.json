@@ -1,0 +1,1171 @@
+{
+ "head": 48522417,
+ "deploy_block": 48286884,
+ "scanned_at_utc_block": 48522417,
+ "activity": {
+  "Constructor": 1,
+  "EnableLltv": 9,
+  "EnableLiquidationCursor": 1,
+  "SetConfigurator": 1,
+  "SetIsAuthorized": 413,
+  "MarketCreated": 42,
+  "SupplyCollateral": 175,
+  "UpdatePosition": 177,
+  "Take": 190,
+  "SetConsumed": 42383,
+  "Repay": 43,
+  "WithdrawCollateral": 87,
+  "Liquidate": 4,
+  "Withdraw": 2
+ },
+ "markets": [
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784160000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xac2d52439742a902efb0c6f542c5d26b574bc3ed",
+     "maxLif": 1043841336116910229
+    },
+    {
+     "token": "0x8324a9d8921453b8b970aa8a359caa84e0a02efb",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x3f511770d3407bb546f2d944eddd0e172b825cd7",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0xa379e53a9bb66644b9cd98fc0006f069c2e5fd189b264b4a5b067da8c126c7ad",
+   "block": 48370818,
+   "totalUnits": 3361987
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xd09048c8b568dbf5f189302bea26c9edabfc4858",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0xcc9418ea594c6e658650aedd205ce4544b266b69493f56fd2adc65c14bd06738",
+   "block": 48371825,
+   "totalUnits": 1721574723229500
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1783555200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xac2d52439742a902efb0c6f542c5d26b574bc3ed",
+     "maxLif": 1043841336116910229
+    },
+    {
+     "token": "0x8324a9d8921453b8b970aa8a359caa84e0a02efb",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x3f511770d3407bb546f2d944eddd0e172b825cd7",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0x02c1253684e6216652adbfffb7486bb72be0bc8975e4b94d7d35e65afe574896",
+   "block": 48372863,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1786147200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x0a1d042b57608444fa8c215302c304457425b1c9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x56b822d7d8be6bded8e1782277989fe5dc4e5b0a4f7f9d349482bc933bd5436c",
+   "block": 48374930,
+   "totalUnits": 1691361
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1783555200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x9dc7a584a37abec8b6081b03c5e61326384d1150",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xd8ac22e9a2790f828d823b14865fa6aa4c6ae36f",
+     "maxLif": 1006036217303822937
+    },
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x9ce1a0a9e5ca28a5333cec7a14d08afbab7fe1eb3a55024b3ae88f2d3bdcc229",
+   "block": 48375253,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784160000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x9dc7a584a37abec8b6081b03c5e61326384d1150",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xd8ac22e9a2790f828d823b14865fa6aa4c6ae36f",
+     "maxLif": 1006036217303822937
+    },
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0xa4030043fce4483aa527a225608e6eb27be7c16a062073b297941c5f72c032d2",
+   "block": 48375519,
+   "totalUnits": 23328896
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x3d1013fe07237cc32245e0ecfea454227304fcac7fc9153b91698a134603abfc",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 945000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1016776817488561260
+    }
+   ],
+   "id": "0x547928917b7a39f68b08baca0d4bfc3fa9c746a555c02f27a819969090c57475",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x0a68993750cfed493498087bb40148232ba199801e0347cbaa291bf61d5b3e59",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0x78e8a10d2eef0bb5b8206ea06aa1204999e9fc3f7df3e21e1d7e14bc086be61a",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452",
+     "lltv": 945000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x4a11590e5326138b514e08a9b52202d42077ca65",
+     "maxLif": 1016776817488561260
+    }
+   ],
+   "id": "0x78c7efdc82c63eb06896998417f8cb65a671a835180836562373f069e3ae9503",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xe1bb8e5b4930ec9fec7f7943fcf6227649f14b37",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0xea3a28036c2fa6b680406e8a734049d616406faff9bb01fc90fd1f5ee93a0980",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1784300400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x10b95702a0ce895972c91e432c4f7e19811d320e",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0x6883e1f3ede5443b7527917a8e1a790d95b0686ab74c561a699d64c2a1daeccb",
+   "block": 48376322,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x10a033a31e0143f28ea28af165b8c931764f5679843754dea86a0c6320655eb2",
+   "block": 48376416,
+   "totalUnits": 9497139
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 945000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1016776817488561260
+    }
+   ],
+   "id": "0xe3045f234b57647db1490129ab744992049f14fdf0db4c752ea802a68ac6bb84",
+   "block": 48376416,
+   "totalUnits": 1028000
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x82b93776fe7d9e0f5ae95a943fa17f2f3b343424dd94c4a51c2c65b1408f28d3",
+   "block": 48376416,
+   "totalUnits": 303028933
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0xa28cffd5ae5f8b59335d974ef541aaf4c3d3beee5d12e28079eebfd1c5e2669f",
+   "block": 48376416,
+   "totalUnits": 658021
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452",
+     "lltv": 945000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x4a11590e5326138b514e08a9b52202d42077ca65",
+     "maxLif": 1016776817488561260
+    }
+   ],
+   "id": "0x55f1ab8766b38ef512ccbe60db2c5d48639f59f9bb6251a6262fdd61ef774434",
+   "block": 48376416,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xe1bb8e5b4930ec9fec7f7943fcf6227649f14b37",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0xa576dd655f54b31772a868edb3c65645f077ae61ae5de3b2a9b936b2fd8a21eb",
+   "block": 48376416,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x10b95702a0ce895972c91e432c4f7e19811d320e",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0xc864824eddb0b69b861b33f9cac4f48f139db416757c2ca13dbad2032ffce3c3",
+   "block": 48376416,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xd09048c8b568dbf5f189302bea26c9edabfc4858",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x0b8fe70a0597e371bdcdbf1bbca019826f819d9a1a434e5d54a6793c3393c5ab",
+   "block": 48376416,
+   "totalUnits": 1122728511365835
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0xc32232fc088a7f35bd0e089fa6c16dc40fd75a0d83f843ba6e998b6795b3fe2e",
+   "block": 48376468,
+   "totalUnits": 501731
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 945000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1016776817488561260
+    }
+   ],
+   "id": "0xa18a040e58156ea70d97a67089fc55494ed5f4ffab6ced44ad92971968800a67",
+   "block": 48376468,
+   "totalUnits": 2246362
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x29a2e5fe35995f63aff3fa028c95bd87b6acc13e2e5fcc310d6e97d3b335f132",
+   "block": 48376468,
+   "totalUnits": 135495908
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0x0664c52b4456daa724d6dcb03bc117dc92ccd15b970db136ef26074dbf67afe3",
+   "block": 48376468,
+   "totalUnits": 38539069
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452",
+     "lltv": 945000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x4a11590e5326138b514e08a9b52202d42077ca65",
+     "maxLif": 1016776817488561260
+    }
+   ],
+   "id": "0x936f1ab4e7aa769e9c4d3070c1aad8eb666b647ecf10b37729e9b1a31a9e6ac1",
+   "block": 48376468,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xe1bb8e5b4930ec9fec7f7943fcf6227649f14b37",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x914b3aa84e1ca8d30939ce708061fb36d6e201ef9dc0470bc563320047bca279",
+   "block": 48376468,
+   "totalUnits": 5108561
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x10b95702a0ce895972c91e432c4f7e19811d320e",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0xc5f6b28ca876b729064ceafa442deb2a32e3b7fda95182c81f1f37a0a8b5da67",
+   "block": 48376468,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xd09048c8b568dbf5f189302bea26c9edabfc4858",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x6b2a0ba1eff139a69f330406d572acf5dc2e8594272433f825ad69ded75b09cd",
+   "block": 48376468,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784764800,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xac2d52439742a902efb0c6f542c5d26b574bc3ed",
+     "maxLif": 1043841336116910229
+    },
+    {
+     "token": "0x8324a9d8921453b8b970aa8a359caa84e0a02efb",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x3f511770d3407bb546f2d944eddd0e172b825cd7",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0xa5b45064784e475745b157c498e3e57652affa5c06a25efd44082ba029fe5de5",
+   "block": 48403242,
+   "totalUnits": 230101
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1783695600,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x4200000000000000000000000000000000000006",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x62f9235d2dd14595a3e7d1d9888a9f8be7c1b48143a5fb41cfa7cd59eb720535",
+   "block": 48406070,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784764800,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0x9dc7a584a37abec8b6081b03c5e61326384d1150",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0xd8ac22e9a2790f828d823b14865fa6aa4c6ae36f",
+     "maxLif": 1006036217303822937
+    },
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x90d2730e85d61f150e2678c563c894702a177eec38efe95acaaa8ae60c2dcfb4",
+   "block": 48410640,
+   "totalUnits": 1010746
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1785510000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0xea5d813ec70a84ef94e15143a41427d7bd597fc74ca0685688724c56d40aa1b2",
+   "block": 48417793,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1787929200,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0x53bd80c2dbe4657d41051b01e660d70511e09df9fb0a0e679067381b3c27207c",
+   "block": 48417793,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1790348400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0x367404d52b29a0bf9b8c64a005328cf5970f80c45ccaab4cf036555649800605",
+   "block": 48417793,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1793372400,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0xdc4f13f0cb80cb22f3ddf70e2dffbc32d05c19d845e3c6b09390a81e83844dca",
+   "block": 48417793,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1795791600,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0x34c7eee2ffedc4704cc9fe3959ec07c1e568ce11893f78408de225e237cc5b1a",
+   "block": 48417793,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1798210800,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 980000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1006036217303822937
+    }
+   ],
+   "id": "0xf3c7f4711fe76099bb55aabeeceb0010892e6fac3cde4c90415345b8079e1f3c",
+   "block": 48417793,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1783695600,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0xbea4d67db140826ec2a06bcdb8b70f4d6219806d939474f7ca3ef5060d21e972",
+   "block": 48449590,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x4200000000000000000000000000000000000006",
+   "maturity": 1783695600,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+     "lltv": 915000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x10b95702a0ce895972c91e432c4f7e19811d320e",
+     "maxLif": 1026167265264238070
+    }
+   ],
+   "id": "0x9bdcba742bfef3914bb26f8cbf9e2acb66e07487b9bb9e3c72ad9c7c5c0d7bbe",
+   "block": 48449591,
+   "totalUnits": 0
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1815264000,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xa88594d404727625a9437c3f886c7643872296ae",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x71fbad6c2200c8a5b89380f9b6bb8a35d411c852",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x50f6702fb5ba2f6e61dff38dfac2a2f4471aeb6c4b297aba1d6cc4c6f1422e87",
+   "block": 48459324,
+   "totalUnits": 1030462
+  },
+  {
+   "chainId": 8453,
+   "midnight": "0xadedd8ab6de832766fedf0fac4992e5c4d3ea18a",
+   "loanToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+   "maturity": 1784332800,
+   "rcfThreshold": 0,
+   "enterGate": "0x0000000000000000000000000000000000000000",
+   "liquidatorGate": "0x0000000000000000000000000000000000000000",
+   "collateralParams": [
+    {
+     "token": "0xa88594d404727625a9437c3f886c7643872296ae",
+     "lltv": 860000000000000000,
+     "liquidationCursor": 300000000000000000,
+     "oracle": "0x71fbad6c2200c8a5b89380f9b6bb8a35d411c852",
+     "maxLif": 1043841336116910229
+    }
+   ],
+   "id": "0x691487333c1bb0236e633258bb1d14cb1b5bc845bbcf42280578f0f972bad33d",
+   "block": 48461856,
+   "totalUnits": 1000599
+  }
+ ],
+ "liquidates": [
+  {
+   "block": 48413959,
+   "tx": "0xc46cb5439431627c0b6151fddc81406311759383976e9ebbae9cc10f9c3d4aa3",
+   "id": "0x02c1253684e6216652adbfffb7486bb72be0bc8975e4b94d7d35e65afe574896",
+   "collateral": "0x4200000000000000000000000000000000000006",
+   "borrower": "0x1efc3ed4209901f8341f9aab2c4cf4b0e7f897e5",
+   "caller": "0x6d9dea0ae96156862a534e5016173d3e001cb7d0",
+   "seizedAssets": 8629268872,
+   "repaidUnits": 15,
+   "postMaturityMode": true,
+   "badDebt": 0
+  },
+  {
+   "block": 48413960,
+   "tx": "0x6fdd1c0a7433f5f78b33cc54607a63c0c6dffb77645623cf2e2e446abb3263c4",
+   "id": "0x9ce1a0a9e5ca28a5333cec7a14d08afbab7fe1eb3a55024b3ae88f2d3bdcc229",
+   "collateral": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+   "borrower": "0x21dcee6d9e6e92b85607f0cc16d625cacef9e45f",
+   "caller": "0x6d9dea0ae96156862a534e5016173d3e001cb7d0",
+   "seizedAssets": 1660,
+   "repaidUnits": 996792,
+   "postMaturityMode": true,
+   "badDebt": 0
+  },
+  {
+   "block": 48413983,
+   "tx": "0x294e94056bbe66eb0a38df3f37569d3b5310e0269d55b2479dedc502bfc2aa96",
+   "id": "0x9ce1a0a9e5ca28a5333cec7a14d08afbab7fe1eb3a55024b3ae88f2d3bdcc229",
+   "collateral": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+   "borrower": "0x21dcee6d9e6e92b85607f0cc16d625cacef9e45f",
+   "caller": "0x6d9dea0ae96156862a534e5016173d3e001cb7d0",
+   "seizedAssets": 5,
+   "repaidUnits": 3004,
+   "postMaturityMode": true,
+   "badDebt": 0
+  },
+  {
+   "block": 48453043,
+   "tx": "0x10fa3c10e6c4b3cbd6c61c553ecb134e5c52d132dbc2938516fc5a720300459b",
+   "id": "0x9ce1a0a9e5ca28a5333cec7a14d08afbab7fe1eb3a55024b3ae88f2d3bdcc229",
+   "collateral": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+   "borrower": "0x21dcee6d9e6e92b85607f0cc16d625cacef9e45f",
+   "caller": "0x6ba008e3f6ec55dc6412e459ac67949c6d1620c5",
+   "seizedAssets": 0,
+   "repaidUnits": 251,
+   "postMaturityMode": true,
+   "badDebt": 0
+  }
+ ],
+ "tokens": {
+  "0x4200000000000000000000000000000000000006": {
+   "symbol": "WETH",
+   "decimals": 18
+  },
+  "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913": {
+   "symbol": "USDC",
+   "decimals": 6
+  },
+  "0x8324a9d8921453b8b970aa8a359caa84e0a02efb": {
+   "symbol": "WETH-USDC-collat",
+   "decimals": 18
+  },
+  "0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842": {
+   "symbol": "MORPHO",
+   "decimals": 18
+  },
+  "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
+   "symbol": "cbBTC",
+   "decimals": 8
+  },
+  "0x9dc7a584a37abec8b6081b03c5e61326384d1150": {
+   "symbol": "cbBTC-USDC-collat",
+   "decimals": 18
+  },
+  "0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452": {
+   "symbol": "wstETH",
+   "decimals": 18
+  },
+  "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42": {
+   "symbol": "EURC",
+   "decimals": 6
+  },
+  "0xa88594d404727625a9437c3f886c7643872296ae": {
+   "symbol": "WELL",
+   "decimals": 18
+  }
+ },
+ "oracles": {
+  "0xac2d52439742a902efb0c6f542c5d26b574bc3ed": {
+   "address": "0xac2d52439742a902efb0c6f542c5d26b574bc3ed",
+   "code_bytes": 2656,
+   "price": 1800731189931668709985451655,
+   "descriptions": [],
+   "oev_flag": false
+  },
+  "0x3f511770d3407bb546f2d944eddd0e172b825cd7": {
+   "address": "0x3f511770d3407bb546f2d944eddd0e172b825cd7",
+   "code_bytes": 2598,
+   "price": 1000508000000000000000000,
+   "descriptions": [],
+   "oev_flag": false
+  },
+  "0xd09048c8b568dbf5f189302bea26c9edabfc4858": {
+   "address": "0xd09048c8b568dbf5f189302bea26c9edabfc4858",
+   "code_bytes": 2598,
+   "price": 555329971286800676408436720568831834631523199,
+   "descriptions": [
+    "BASE_FEED_1=0x7e860098f58bbfc8648a4311b374b1d669a2bc6b desc='USDC / USD'",
+    "QUOTE_FEED_1=0x71041dddad3595f9ced3dccfbe3d1f4b0a16bb70 desc='ETH / USD'"
+   ],
+   "oev_flag": false
+  },
+  "0x0a1d042b57608444fa8c215302c304457425b1c9": {
+   "address": "0x0a1d042b57608444fa8c215302c304457425b1c9",
+   "code_bytes": 2598,
+   "price": 2041827070258533569772601,
+   "descriptions": [
+    "BASE_FEED_1=0xe95e258bb6615d47515fc849f8542da651f12bf6 desc='MORPHO / USD'",
+    "QUOTE_FEED_1=0x7e860098f58bbfc8648a4311b374b1d669a2bc6b desc='USDC / USD'"
+   ],
+   "oev_flag": false
+  },
+  "0xd8ac22e9a2790f828d823b14865fa6aa4c6ae36f": {
+   "address": "0xd8ac22e9a2790f828d823b14865fa6aa4c6ae36f",
+   "code_bytes": 2598,
+   "price": 1000508000000000000000000,
+   "descriptions": [],
+   "oev_flag": false
+  },
+  "0x663becd10dae6c4a3dcd89f1d76c1174199639b9": {
+   "address": "0x663becd10dae6c4a3dcd89f1d76c1174199639b9",
+   "code_bytes": 2598,
+   "price": 638954700000000000000000000000000000000,
+   "descriptions": [
+    "BASE_FEED_1=0x64c911996d3c6ac71f9b455b1e8e7266bcbd848f desc='BTC / USD'"
+   ],
+   "oev_flag": false
+  },
+  "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4": {
+   "address": "0xfea2d58cefcb9fcb597723c6bae66ffe4193afe4",
+   "code_bytes": 2598,
+   "price": 1800731189931668709985451655,
+   "descriptions": [
+    "BASE_FEED_1=0x71041dddad3595f9ced3dccfbe3d1f4b0a16bb70 desc='ETH / USD'",
+    "QUOTE_FEED_1=0x7e860098f58bbfc8648a4311b374b1d669a2bc6b desc='USDC / USD'"
+   ],
+   "oev_flag": false
+  },
+  "0x4a11590e5326138b514e08a9b52202d42077ca65": {
+   "address": "0x4a11590e5326138b514e08a9b52202d42077ca65",
+   "code_bytes": 2598,
+   "price": 1239130985499870558000000000000000000,
+   "descriptions": [
+    "BASE_FEED_1=0xb88bac61a4ca37c43a3725912b1f472c9a5bc061 desc='wstETH-stETH Exchange Rate'"
+   ],
+   "oev_flag": false
+  },
+  "0xe1bb8e5b4930ec9fec7f7943fcf6227649f14b37": {
+   "address": "0xe1bb8e5b4930ec9fec7f7943fcf6227649f14b37",
+   "code_bytes": 2598,
+   "price": 1577146423722132188690815119,
+   "descriptions": [
+    "BASE_FEED_1=0x71041dddad3595f9ced3dccfbe3d1f4b0a16bb70 desc='ETH / USD'",
+    "QUOTE_FEED_1=0xc91d87e81fab8f93699ecf7ee9b44d11e1d53f0f desc='EUR / USD'"
+   ],
+   "oev_flag": false
+  },
+  "0x10b95702a0ce895972c91e432c4f7e19811d320e": {
+   "address": "0x10b95702a0ce895972c91e432c4f7e19811d320e",
+   "code_bytes": 2598,
+   "price": 354897643095959962041589287663266572853737645395,
+   "descriptions": [
+    "BASE_FEED_1=0x64c911996d3c6ac71f9b455b1e8e7266bcbd848f desc='BTC / USD'",
+    "QUOTE_FEED_1=0x71041dddad3595f9ced3dccfbe3d1f4b0a16bb70 desc='ETH / USD'"
+   ],
+   "oev_flag": false
+  },
+  "0x71fbad6c2200c8a5b89380f9b6bb8a35d411c852": {
+   "address": "0x71fbad6c2200c8a5b89380f9b6bb8a35d411c852",
+   "code_bytes": 2598,
+   "price": 3578675081267330269181,
+   "descriptions": [
+    "BASE_FEED_1=0xaeee6335f50e1f8af924df0742b1879c9761f5f5 desc='WELL / USD'",
+    "QUOTE_FEED_1=0x7e860098f58bbfc8648a4311b374b1d669a2bc6b desc='USDC / USD'"
+   ],
+   "oev_flag": false
+  }
+ },
+ "code": {
+  "midnight": {
+   "address": "0xAdedD8ab6dE832766Fedf0FaC4992E5C4D3EA18A",
+   "size": 24557,
+   "keccak256": "0x94dfc372cddf727c3cb9649ffab79f400260e1f50c380324e4ad0cf5ab29d9a7"
+  },
+  "midnightBundles": {
+   "address": "0x091183d729BE9f808c212b475E387A12E67850A7",
+   "size": 16513,
+   "keccak256": "0xb61f31e3a4c3c8eda9b1543a426165f7bef567ff3bb87fd5e1a980e2e0d84d1a"
+  },
+  "midnightMempool": {
+   "address": "0xdD6DCE32e21f7b020898a8258dA37355b4017993",
+   "size": 120,
+   "keccak256": "0x10c5904c8955f602f39bbb0789f9c63aaf9951fe816e45885f47deda07b800a0"
+  },
+  "ecrecoverRatifier": {
+   "address": "0xd6e70365C8E8DDa9a4ca662C07bbE663b017755E",
+   "size": 4139,
+   "keccak256": "0xcce1e0dd38ae831e81a9270627af2c24c208409ec03d5654a28a33ead53b1ac1"
+  },
+  "ecrecoverAuthorizer": {
+   "address": "0x292bEa9f1443d54E0E509120c919106765c6a493",
+   "size": 1276,
+   "keccak256": "0x0c34d9532a4d5456d994e8ecf31ff4ee0b354304bb7317ad2bd020f14845d699"
+  },
+  "setterRatifier": {
+   "address": "0x800B5F12A61B8198a5a6EfD794Cac6699B294d63",
+   "size": 2713,
+   "keccak256": "0xace63c5b7c1b611d0b9c04df3993ce0cf24a172287c9e0755d18606b7465c235"
+  }
+ },
+ "mempool_logs": 656,
+ "bundles_logs": 0,
+ "raw_log_count": 43528
+}

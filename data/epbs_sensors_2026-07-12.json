@@ -1,0 +1,247 @@
+{
+ "date": "2026-07-12",
+ "sensors": {
+  "S1": {
+   "status": "OK",
+   "sha": "3dff7a8bd50e00f4",
+   "sfi": [
+    "7708",
+    "7732",
+    "7778",
+    "7843",
+    "7928",
+    "7954",
+    "7976",
+    "7981",
+    "8024",
+    "8037"
+   ],
+   "cfi": [
+    "2780",
+    "7688",
+    "7904",
+    "7997",
+    "8038",
+    "8045",
+    "8061",
+    "8080",
+    "8246"
+   ],
+   "epbs_7732_in_sfi": true,
+   "eip8282_mentioned": false,
+   "activation": {
+    "Sepolia": [],
+    "Holešky": [],
+    "Mainnet": []
+   }
+  },
+  "S2": {
+   "status": "OK",
+   "fork_epoch": {
+    "mainnet": 18446744073709551615,
+    "sepolia": null,
+    "hoodi": null,
+    "holesky": null
+   },
+   "activation_rows_filled": {
+    "Sepolia": false,
+    "Holešky": false,
+    "Mainnet": false
+   },
+   "epoch_set_somewhere": false
+  },
+  "S3": {
+   "status": "OK",
+   "mev_boost": [
+    {
+     "tag": "v1.12",
+     "date": "2026-02-23",
+     "match": false
+    },
+    {
+     "tag": "v1.12-alpha1",
+     "date": "2026-02-12",
+     "match": false
+    },
+    {
+     "tag": "v1.11",
+     "date": "2026-02-03",
+     "match": false
+    },
+    {
+     "tag": "v1.11-alpha1",
+     "date": "2026-01-15",
+     "match": false
+    },
+    {
+     "tag": "v1.10.1",
+     "date": "2025-11-13",
+     "match": false
+    },
+    {
+     "tag": "v1.10.0",
+     "date": "2025-11-01",
+     "match": false
+    },
+    {
+     "tag": "v1.10-alpha7",
+     "date": "2025-10-28",
+     "match": false
+    },
+    {
+     "tag": "v1.10-alpha6",
+     "date": "2025-10-10",
+     "match": false
+    },
+    {
+     "tag": "v1.10-alpha5",
+     "date": "2025-09-29",
+     "match": false
+    },
+    {
+     "tag": "v1.10-alpha3",
+     "date": "2025-09-04",
+     "match": false
+    }
+   ],
+   "mev_boost_relay": [
+    {
+     "tag": "v0.32.0",
+     "date": "2025-11-12",
+     "match": false
+    },
+    {
+     "tag": "v0.32.0-rc2",
+     "date": "2025-09-30",
+     "match": false
+    },
+    {
+     "tag": "v0.31.0",
+     "date": "2025-05-13",
+     "match": false
+    },
+    {
+     "tag": "v0.30.2",
+     "date": "2025-05-12",
+     "match": false
+    },
+    {
+     "tag": "v0.30.1",
+     "date": "2025-05-06",
+     "match": false
+    },
+    {
+     "tag": "v0.30.0",
+     "date": "2025-04-30",
+     "match": false
+    },
+    {
+     "tag": "v0.30.0-rc1",
+     "date": "2025-02-20",
+     "match": false
+    },
+    {
+     "tag": "v0.29.1",
+     "date": "2024-02-15",
+     "match": false
+    },
+    {
+     "tag": "v0.29",
+     "date": "2024-01-30",
+     "match": false
+    },
+    {
+     "tag": "v0.28",
+     "date": "2023-12-12",
+     "match": false
+    }
+   ],
+   "gloas_software_exists": false,
+   "rbuilder_pr855": {
+    "title": "add builder server for epbs ",
+    "state": "open",
+    "draft": true,
+    "updated": "2026-05-19T18:56:03Z"
+   }
+  },
+  "S4": {
+   "status": "OK",
+   "clients": {
+    "sigp/lighthouse": {
+     "tag": "v8.2.0",
+     "date": "2026-06-22"
+    },
+    "prysmaticlabs/prysm": {
+     "tag": "v7.1.6",
+     "date": "2026-07-01"
+    },
+    "Consensys/teku": {
+     "tag": "26.7.1",
+     "date": "2026-07-11"
+    },
+    "status-im/nimbus-eth2": {
+     "tag": "v26.6.2",
+     "date": "2026-06-29"
+    },
+    "grandinetech/grandine": {
+     "tag": "2.0.5",
+     "date": "2026-06-29"
+    }
+   }
+  },
+  "S5": {
+   "status": "OK",
+   "files": {
+    "beacon-chain.md": {
+     "sha": "6c58d8c2bd941208",
+     "ptc_constants": [
+      "PTC_SIZE"
+     ]
+    },
+    "validator.md": {
+     "sha": "1d17c05aeba37d3e",
+     "ptc_constants": [
+      "PAYLOAD_ATTESTATION_DUE_BPS"
+     ]
+    },
+    "builder.md": {
+     "sha": "bc525f9bb9ab7cf2",
+     "ptc_constants": []
+    }
+   }
+  },
+  "S6": {
+   "status": "OK",
+   "timing": {
+    "PAYLOAD_DUE_BPS": 5000,
+    "PAYLOAD_ATTESTATION_DUE_BPS": 7500,
+    "ATTESTATION_DUE_BPS_GLOAS": 2500,
+    "AGGREGATE_DUE_BPS_GLOAS": 5000,
+    "SYNC_MESSAGE_DUE_BPS_GLOAS": 2500,
+    "CONTRIBUTION_DUE_BPS_GLOAS": 5000,
+    "MIN_BUILDER_WITHDRAWABILITY_DELAY": 64
+   },
+   "latest_spec_tag": "v1.7.0-alpha.12"
+  },
+  "S7": {
+   "status": "OK",
+   "cfi_watch": {
+    "2780": "CFI",
+    "8038": "CFI",
+    "7904": "CFI"
+   },
+   "devnets": [
+    "devnet-2",
+    "devnet-3",
+    "devnet-4",
+    "devnet-5",
+    "devnet-6"
+   ],
+   "latest_devnet": {
+    "name": "devnet-6",
+    "gloas_fork_epoch": 30
+   },
+   "repricing_in_sfi": false
+  }
+ }
+}

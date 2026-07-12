@@ -48,7 +48,15 @@ from analysis.rpc import Rpc  # noqa: E402
 CONTRACT = os.environ.get("MN_CONTRACT", "")
 ACCOUNT = os.environ.get("MN_ACCOUNT", "midnight-bot")
 PASSFILE = os.path.expanduser(os.environ.get("MN_PASSFILE", "~/.midnight-bot/pw"))
+# MN_PRIVATE_KEY: если задан, cast send подписывает им (--private-key) вместо
+# foundry-keystore (--account/--password-file). Прод путь = keystore (ключ НЕ в env);
+# raw-ключ используется ТОЛЬКО для локального форк-теста (anvil-дефолтный аккаунт).
+PRIVATE_KEY = os.environ.get("MN_PRIVATE_KEY", "")
 RPC_WRITE = os.environ.get("MN_RPC", "https://mainnet.base.org")
+# MN_READ_RPC: override read-RPC (детект/квоты/оракул). По умолчанию — публичные
+# BASE_RPCS (прод). Для форк-теста ставим сюда fork-URL, чтобы read_debt читал
+# инъектнутый долг с форка, а не реальную цепь. Прод-путь не меняется, если не задан.
+READ_RPCS = [os.environ["MN_READ_RPC"]] if os.environ.get("MN_READ_RPC") else BASE_RPCS
 THRESHOLD_USD = float(os.environ.get("MN_THRESHOLD", "5000"))
 MIN_PROFIT_USD = float(os.environ.get("MN_MIN_PROFIT", "50"))
 POLL_SEC = int(os.environ.get("MN_POLL_SEC", "45"))
@@ -130,10 +138,12 @@ def evaluate(router: BaseRouter, rpc: Rpc, t: dict, now: int) -> dict | None:
 
 def fire(t: dict, ev: dict) -> None:
     """Подпись+бродкаст через cast send (или dry-лог)."""
+    sign = (["--private-key", PRIVATE_KEY] if PRIVATE_KEY
+            else ["--account", ACCOUNT, "--password-file", PASSFILE])
     args = ["cast", "send", CONTRACT, RUN_SIG,
             t["market"], str(ev["cp_index"]), str(ev["repaid"]),
             t["borrower"], ev["swap_path"], str(ev["min_out"]),
-            "--rpc-url", RPC_WRITE, "--account", ACCOUNT, "--password-file", PASSFILE]
+            "--rpc-url", RPC_WRITE] + sign
     if DRY_RUN or not CONTRACT:
         msg = (f"🧪 DRY_RUN: цель ${t['usd']:,.0f} borrower {t['borrower'][:10]}… "
                f"net ${ev['net_usd']:+,.1f}; НЕ отправлено (DRY_RUN/нет контракта).\n"
@@ -154,7 +164,7 @@ def fire(t: dict, ev: dict) -> None:
 
 def once() -> int:
     blob = json.load(open(CACHE))
-    rpc = Rpc(BASE_RPCS)
+    rpc = Rpc(READ_RPCS)
     router = BaseRouter(rpc)
     now = int(rpc.get_block("latest")["timestamp"], 16)
     targets = find_targets(rpc, blob, now)

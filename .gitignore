@@ -4,3 +4,8 @@ __pycache__/
 data/hyperlend_liqcalls_raw.json
 data/hyperlend_liqs_decoded.json
 data/hyperlend_isolated_liqs.json
+
+# ePBS-монитор: runtime (state/лог) — не трекать; датированные снапшоты трекаются отдельно
+data/epbs_monitor_state.json
+data/epbs_monitor.log
+data/epbs_monitor_cron.log

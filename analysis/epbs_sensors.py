@@ -195,6 +195,22 @@ def sensor_s4() -> dict:
     return out
 
 
+# имена PTC/тайминг-констант, чьё появление ИЛИ значение в specs/gloas = материя для H1/H2
+_PTC_NAME_RE = r"\b(PTC_[A-Z_]+|PAYLOAD_TIMELY_[A-Z_]+|PAYLOAD_ATTESTATION_[A-Z_]+)\b"
+
+
+def const_values(txt: str, names: list[str]) -> dict:
+    """Значения именованных констант из markdown-таблиц спеки (| `NAME` | `VALUE` |).
+    Позволяет отличить смену ЗНАЧЕНИЯ стимула (материя) от правки прозы/комментария:
+    последняя двигает sha файла, но значения констант не трогает."""
+    vals = {}
+    for name in names:
+        m = re.search(r"\|\s*`?" + re.escape(name) + r"`?\s*\|\s*([^|\n]+?)\s*\|", txt)
+        if m:
+            vals[name] = m.group(1).strip().strip("`")
+    return vals
+
+
 def sensor_s5() -> dict:
     out, ok = {"status": "OK", "files": {}}, False
     for f in GLOAS_SPEC_FILES:
@@ -203,10 +219,11 @@ def sensor_s5() -> dict:
             out["files"][f] = "UNAVAILABLE"
             continue
         ok = True
+        names = sorted(set(re.findall(_PTC_NAME_RE, txt)))
         out["files"][f] = {
             "sha": hashlib.sha256(txt.encode()).hexdigest()[:16],
-            "ptc_constants": sorted(set(re.findall(
-                r"\b(PTC_[A-Z_]+|PAYLOAD_TIMELY_[A-Z_]+|PAYLOAD_ATTESTATION_[A-Z_]+)\b", txt))),
+            "ptc_constants": names,
+            "ptc_values": const_values(txt, names),
         }
     out["status"] = "OK" if ok else "UNAVAILABLE"
     return out
@@ -297,9 +314,9 @@ def triggers(sensors: dict, changed: list[str]) -> list[str]:
     if any(k.startswith("S6.timing") for k in map(str.strip, changed)):
         out.append("S6 СИГНАЛ: тайминг-константы слота изменились -> обновить "
                    "bps-параметры H2-модели (класс «9s->6s»).")
-    if any(k.strip().startswith("S5.") for k in changed):
-        out.append("S5 СИГНАЛ: specs/gloas изменились -> проверить PTC-стимулы, "
-                   "при митигациях free option пересчитать H1/H2.")
+    if any(("ptc_constants" in k or "ptc_values" in k) for k in map(str.strip, changed)):
+        out.append("S5 СИГНАЛ: PTC-константы/значения в specs/gloas изменились -> "
+                   "проверить PTC-стимулы, при митигациях free option пересчитать H1/H2.")
     return out
 
 

@@ -42,7 +42,15 @@ ENV_FILE = os.path.expanduser("~/.claude/channels/telegram/.env")
 CHAT_ID = os.environ.get("MN_CHAT_ID", "265715923")
 
 # префиксы плоских ключей, изменение которых НЕ алертим (рутина/шум) — только лог
-SUPPRESS = ("S4", "S1.sha", "S1.cfi", "S3.mev_boost", "S3.rbuilder", "S7.devnets")
+SUPPRESS = ("S4", "S1.sha", "S1.cfi", "S3.mev_boost", "S3.rbuilder", "S7.devnets",
+            "S7.latest_devnet")
+
+
+def is_noise(key: str) -> bool:
+    """True = рутина/шум: только лог, без TG. Голые content-sha спеки (правка прозы/
+    комментария) и прогресс девнета материей сами по себе не являются — материей
+    делает изменение констант/значений (ptc_*) или статусов (repricing/эпохи)."""
+    return key.endswith(".sha") or any(key.startswith(p) for p in SUPPRESS)
 
 
 def log(msg: str) -> None:
@@ -146,7 +154,7 @@ def main() -> int:
     cur = carry_forward(cur, prev)
 
     changed = changed_keys(prev, cur)
-    material = [k for k in changed if not any(k.startswith(p) for p in SUPPRESS)]
+    material = [k for k in changed if not is_noise(k)]
     trg = es.triggers(cur["sensors"], [f"  {k}:" for k in changed])  # triggers ждёт строки-«  key:…»
     first_run = prev is None
 
@@ -169,7 +177,7 @@ def main() -> int:
 
     if not trg and not material:
         log("без материальных изменений — TG молчит" +
-            (f" (шумовых изменений: {len(changed)})" if changed else ""))
+            (f" (шум: {', '.join(changed)})" if changed else ""))
         return 0
 
     lines = [f"🛰️ ePBS-сенсоры — {date}", ""]

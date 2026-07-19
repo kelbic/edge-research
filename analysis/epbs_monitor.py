@@ -120,6 +120,16 @@ def changed_keys(prev: dict | None, cur: dict) -> list[str]:
     return [k for k in sorted(set(fp) | set(fc)) if fp.get(k) != fc.get(k)]
 
 
+def schema_growth_keys(prev: dict | None, cur: dict) -> set[str]:
+    """Пути, «изменившиеся» лишь потому, что сенсор начал их собирать. Ни материей, ни
+    триггером они быть не могут — источник их не менял (см. es.is_schema_growth)."""
+    if not prev:
+        return set()
+    fp, fc = es.flatten(prev.get("sensors", {})), es.flatten(cur["sensors"])
+    return {k for k in set(fp) | set(fc)
+            if fp.get(k) != fc.get(k) and es.is_schema_growth(fp, fc, k)}
+
+
 def key_line(prev: dict, cur: dict, k: str) -> str:
     fp, fc = es.flatten(prev.get("sensors", {})), es.flatten(cur["sensors"])
     return f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}"
@@ -154,8 +164,10 @@ def main() -> int:
     cur = carry_forward(cur, prev)
 
     changed = changed_keys(prev, cur)
-    material = [k for k in changed if not is_noise(k)]
-    trg = es.triggers(cur["sensors"], [f"  {k}:" for k in changed])  # triggers ждёт строки-«  key:…»
+    grown = schema_growth_keys(prev, cur)          # рост схемы сенсора != изменение источника
+    material = [k for k in changed if not is_noise(k) and k not in grown]
+    trg = es.triggers(cur["sensors"],              # triggers ждёт строки-«  key:…»
+                      [f"  {k}:" for k in changed if k not in grown])
     first_run = prev is None
 
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
@@ -163,7 +175,11 @@ def main() -> int:
 
     date = cur["date"]
     log(f"скан {date}: изменений={len(changed)} материальных={len(material)} "
-        f"триггеров={len(trg)} suppressed={len(changed) - len(material)}")
+        f"триггеров={len(trg)} suppressed={len(changed) - len(material)} "
+        f"(из них рост схемы={len(grown)})")
+    if grown:                                  # видно в логе, но без TG и без триггеров
+        log(f"  новые поля сенсора (база): {', '.join(sorted(grown)[:8])}"
+            f"{' …' if len(grown) > 8 else ''}")
 
     if first_run:
         msg = ("📡 ePBS-монитор запущен (baseline, S1–S7).\n"

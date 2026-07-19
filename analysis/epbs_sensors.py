@@ -279,12 +279,42 @@ def flatten(obj, prefix=""):
     return out
 
 
+def is_schema_growth(fp: dict, fc: dict, key: str) -> bool:
+    """True, если путь `key` «изменился» ТОЛЬКО потому, что сам сенсор научился его собирать,
+    а не потому, что источник изменился.
+
+    Зачем: 19.07 добавление поля `ptc_values` дало `<нет> -> uint64(2**9)` по PTC_SIZE и
+    выстрелило S5-триггером «PTC-константы изменились» — хотя в спеке ничего не менялось
+    (значения совпали с зафиксированными в карте перехода 05.07). Любое расширение схемы
+    иначе порождает ложный триггер, а ложные триггеры обесценивают алертинг.
+
+    Признак роста схемы: раньше РОДИТЕЛЬ был листом с пустым значением (None/{}/[]), а теперь
+    у него появились дети — либо наоборот, лист исчез, потому что развернулся в поддерево.
+    Смена ЗНАЧЕНИЯ уже существовавшего пути под это не подпадает и остаётся материей."""
+    def _empty(v) -> bool:
+        return v is None or v in ("", "{}", "[]", "null")
+
+    if key in fp:
+        return False              # путь уже собирался -> это смена значения, материя
+    parent = key.rsplit(".", 1)[0] if "." in key else ""
+    if not parent:
+        return False
+    if parent in fp and _empty(fp[parent]):
+        return True               # родитель был пустым листом и развернулся в поддерево
+    # ключевой случай 19.07: ветки `…​.ptc_values` в прошлом снапшоте НЕ БЫЛО ВОВСЕ — поля
+    # тогда не существовало. Если же ветка была (например, в ptc_values уже лежали константы),
+    # то появление новой константы внутри неё — это спека, а не схема, и остаётся материей.
+    return not (parent in fp or any(k.startswith(parent + ".") for k in fp))
+
+
 def diff_snapshots(prev: dict, cur: dict) -> list[str]:
     fp, fc = flatten(prev.get("sensors", {})), flatten(cur.get("sensors", {}))
     lines = []
     for k in sorted(set(fp) | set(fc)):
         if fp.get(k) != fc.get(k):
-            lines.append(f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}")
+            grown = " [новое поле сенсора, не изменение источника]" \
+                if is_schema_growth(fp, fc, k) else ""
+            lines.append(f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}{grown}")
     return lines
 
 
@@ -314,6 +344,9 @@ def triggers(sensors: dict, changed: list[str]) -> list[str]:
     if any(k.startswith("S6.timing") for k in map(str.strip, changed)):
         out.append("S6 СИГНАЛ: тайминг-константы слота изменились -> обновить "
                    "bps-параметры H2-модели (класс «9s->6s»).")
+    # строки с меткой роста схемы триггеров не поднимают: сенсор научился читать поле —
+    # это не изменение источника (19.07: ptc_values дало ложный S5-триггер)
+    changed = [k for k in changed if "новое поле сенсора" not in k]
     if any(("ptc_constants" in k or "ptc_values" in k) for k in map(str.strip, changed)):
         out.append("S5 СИГНАЛ: PTC-константы/значения в specs/gloas изменились -> "
                    "проверить PTC-стимулы, при митигациях free option пересчитать H1/H2.")

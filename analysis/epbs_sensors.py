@@ -307,14 +307,50 @@ def is_schema_growth(fp: dict, fc: dict, key: str) -> bool:
     return not (parent in fp or any(k.startswith(parent + ".") for k in fp))
 
 
+GROWTH_MARK = "[новое поле сенсора, не изменение источника]"
+NOTATION_MARK = "[нотация источника, значение не изменилось]"
+
+
+def _norm_notation(v) -> str:
+    """Значение без оформления: бэктики, регистр, кратность пробелов."""
+    return " ".join(str(v).replace("`", "").split()).casefold()
+
+
+def is_notation_only(fp: dict, fc: dict, key: str) -> bool:
+    """True, если путь изменился ТОЛЬКО в записи значения, а не в его смысле.
+
+    Зачем: 22.07 апстрим прогнал по consensus-specs два репо-широких переименования типов
+    (PR #5469 `uint*`->`Uint*`, PR #5466 `boolean`->`Boolean`). Текст КАЖДОЙ константы в
+    таблицах спеки сдвинулся (`uint64(2**9)` (= 512) -> `Uint64(2**9)` (= 512)), при этом ни
+    одно число не изменилось — и 25.07 это подняло S5-триггер «PTC-константы изменились».
+    Третий ложный S5 подряд (16.07 — проза, 19.07 — рост схемы), а ложные триггеры
+    обесценивают алертинг ровно так же, как молчание.
+
+    Снимаем ТОЛЬКО оформление. Смена числа (512 -> 1024) и смена ширины типа
+    (uint64 -> uint256) нормализацию переживают и остаются материей: подавить реальное
+    изменение стимула эта функция не может. Появление/исчезновение пути — тоже не нотация."""
+    if key not in fp or key not in fc:
+        return False
+    return fp[key] != fc[key] and _norm_notation(fp[key]) == _norm_notation(fc[key])
+
+
+def inert_mark(fp: dict, fc: dict, key: str) -> str:
+    """Метка «изменение не от источника» для строки диффа ('' = материя)."""
+    if is_schema_growth(fp, fc, key):
+        return GROWTH_MARK
+    if is_notation_only(fp, fc, key):
+        return NOTATION_MARK
+    return ""
+
+
 def diff_snapshots(prev: dict, cur: dict) -> list[str]:
     fp, fc = flatten(prev.get("sensors", {})), flatten(cur.get("sensors", {}))
     lines = []
     for k in sorted(set(fp) | set(fc)):
         if fp.get(k) != fc.get(k):
-            grown = " [новое поле сенсора, не изменение источника]" \
-                if is_schema_growth(fp, fc, k) else ""
-            lines.append(f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}{grown}")
+            mark = inert_mark(fp, fc, k)
+            tag = f" {mark}" if mark else ""
+            lines.append(f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}{tag}")
     return lines
 
 
@@ -341,12 +377,14 @@ def triggers(sensors: dict, changed: list[str]) -> list[str]:
     if s7.get("status") == "OK" and s7.get("repricing_in_sfi"):
         out.append("S7 ТРИГГЕР: репрайсинг-EIP (2780/8038/7904) вошёл в SFI -> "
                    "CFI-ветвь T4 становится основной.")
+    # Помеченные строки триггеров не поднимают: источник их не менял — сенсор либо научился
+    # читать поле (19.07), либо апстрим переписал значение теми же цифрами (25.07, Uint*).
+    # Фильтр стоит ДО обеих проверок: раньше S6 его не проходил вовсе и оставался открыт
+    # ровно тому классу ложных сигналов, который на S5 сработал уже дважды.
+    changed = [k for k in changed if GROWTH_MARK not in k and NOTATION_MARK not in k]
     if any(k.startswith("S6.timing") for k in map(str.strip, changed)):
         out.append("S6 СИГНАЛ: тайминг-константы слота изменились -> обновить "
                    "bps-параметры H2-модели (класс «9s->6s»).")
-    # строки с меткой роста схемы триггеров не поднимают: сенсор научился читать поле —
-    # это не изменение источника (19.07: ptc_values дало ложный S5-триггер)
-    changed = [k for k in changed if "новое поле сенсора" not in k]
     if any(("ptc_constants" in k or "ptc_values" in k) for k in map(str.strip, changed)):
         out.append("S5 СИГНАЛ: PTC-константы/значения в specs/gloas изменились -> "
                    "проверить PTC-стимулы, при митигациях free option пересчитать H1/H2.")

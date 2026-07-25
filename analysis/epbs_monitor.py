@@ -130,6 +130,17 @@ def schema_growth_keys(prev: dict | None, cur: dict) -> set[str]:
             if fp.get(k) != fc.get(k) and es.is_schema_growth(fp, fc, k)}
 
 
+def notation_only_keys(prev: dict | None, cur: dict) -> set[str]:
+    """Пути, где апстрим переписал ЗАПИСЬ значения, не тронув смысл (25.07: репо-широкое
+    `uint*`->`Uint*` в consensus-specs сдвинуло текст каждой константы, не сдвинув ни одного
+    числа). Ни материя, ни триггер — но в лог попадают (см. es.is_notation_only)."""
+    if not prev:
+        return set()
+    fp, fc = es.flatten(prev.get("sensors", {})), es.flatten(cur["sensors"])
+    return {k for k in set(fp) | set(fc)
+            if fp.get(k) != fc.get(k) and es.is_notation_only(fp, fc, k)}
+
+
 def key_line(prev: dict, cur: dict, k: str) -> str:
     fp, fc = es.flatten(prev.get("sensors", {})), es.flatten(cur["sensors"])
     return f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}"
@@ -165,9 +176,11 @@ def main() -> int:
 
     changed = changed_keys(prev, cur)
     grown = schema_growth_keys(prev, cur)          # рост схемы сенсора != изменение источника
-    material = [k for k in changed if not is_noise(k) and k not in grown]
+    notation = notation_only_keys(prev, cur)       # переписанная запись != изменение значения
+    inert = grown | notation                       # источник не менялся -> ни TG, ни триггер
+    material = [k for k in changed if not is_noise(k) and k not in inert]
     trg = es.triggers(cur["sensors"],              # triggers ждёт строки-«  key:…»
-                      [f"  {k}:" for k in changed if k not in grown])
+                      [f"  {k}:" for k in changed if k not in inert])
     first_run = prev is None
 
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
@@ -176,10 +189,13 @@ def main() -> int:
     date = cur["date"]
     log(f"скан {date}: изменений={len(changed)} материальных={len(material)} "
         f"триггеров={len(trg)} suppressed={len(changed) - len(material)} "
-        f"(из них рост схемы={len(grown)})")
+        f"(из них рост схемы={len(grown)}, нотация={len(notation)})")
     if grown:                                  # видно в логе, но без TG и без триггеров
         log(f"  новые поля сенсора (база): {', '.join(sorted(grown)[:8])}"
             f"{' …' if len(grown) > 8 else ''}")
+    if notation:                               # тоже видно в логе, но без TG и без триггеров
+        log(f"  переписана запись, значение то же: {', '.join(sorted(notation)[:8])}"
+            f"{' …' if len(notation) > 8 else ''}")
 
     if first_run:
         msg = ("📡 ePBS-монитор запущен (baseline, S1–S7).\n"

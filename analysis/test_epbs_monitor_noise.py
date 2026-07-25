@@ -107,5 +107,86 @@ class TestSchemaGrowth(unittest.TestCase):
         self.assertTrue(all("новое поле сенсора" in ln for ln in lines), lines)
 
 
+class TestNotationOnly(unittest.TestCase):
+    """25.07: апстрим прогнал по consensus-specs два репо-широких переименования типов
+    (PR #5469 `uint*`->`Uint*`, PR #5466 `boolean`->`Boolean`, оба 22.07). Текст каждой
+    константы сдвинулся, ни одно число не изменилось — и S5 выстрелил «PTC-константы
+    изменились» в третий раз подряд вхолостую. Проверено побайтово: после снятия регистра
+    beacon-chain.md и validator.md сводятся к копиям от 19.07 без остатка."""
+
+    # ровно значения из state 19.07 -> 25.07
+    PREV = {"sensors": {"S5": {"files": {
+        "beacon-chain.md": {"sha": "ed766a2b4313e61e",
+                            "ptc_values": {"PTC_SIZE": "uint64(2**9)` (= 512)"}},
+        "validator.md": {"sha": "1d17c05aeba37d3e",
+                         "ptc_values": {"PAYLOAD_ATTESTATION_DUE_BPS": "uint64(7500)"}}}}}}
+    CUR = {"sensors": {"S5": {"files": {
+        "beacon-chain.md": {"sha": "5a5de9b01f69279f",
+                            "ptc_values": {"PTC_SIZE": "Uint64(2**9)` (= 512)"}},
+        "validator.md": {"sha": "4f27b4ad2be4b878",
+                         "ptc_values": {"PAYLOAD_ATTESTATION_DUE_BPS": "Uint64(7500)"}}}}}}
+
+    def test_case_rename_fires_no_trigger_end_to_end(self):
+        changed = em.changed_keys(self.PREV, self.CUR)
+        inert = em.schema_growth_keys(self.PREV, self.CUR) \
+            | em.notation_only_keys(self.PREV, self.CUR)
+        material = [k for k in changed if not em.is_noise(k) and k not in inert]
+        trg = es.triggers(TestS5TriggerGating.S,
+                          [f"  {k}:" for k in changed if k not in inert])
+        self.assertEqual(material, [])           # sha — шум, константы — нотация
+        self.assertFalse(any("S5 СИГНАЛ" in t for t in trg))
+
+    def test_both_ptc_paths_are_classified_as_notation(self):
+        notation = em.notation_only_keys(self.PREV, self.CUR)
+        self.assertEqual(notation, {
+            "S5.files.beacon-chain.md.ptc_values.PTC_SIZE",
+            "S5.files.validator.md.ptc_values.PAYLOAD_ATTESTATION_DUE_BPS"})
+        # sha менялся по-настоящему -> нотацией он НЕ является (его гасит is_noise, не этот гейт)
+        self.assertNotIn("S5.files.beacon-chain.md.sha", notation)
+
+    def test_value_change_under_the_same_rename_survives(self):
+        """Главная защита от передавливания: если вместе с регистром поехало ЧИСЛО — материя."""
+        cur2 = json.loads(json.dumps(self.CUR))
+        cur2["sensors"]["S5"]["files"]["beacon-chain.md"]["ptc_values"]["PTC_SIZE"] = \
+            "Uint64(2**10)` (= 1024)"
+        notation = em.notation_only_keys(self.PREV, cur2)
+        self.assertNotIn("S5.files.beacon-chain.md.ptc_values.PTC_SIZE", notation)
+        changed = em.changed_keys(self.PREV, cur2)
+        trg = es.triggers(TestS5TriggerGating.S,
+                          [f"  {k}:" for k in changed if k not in notation])
+        self.assertTrue(any("S5 СИГНАЛ" in t for t in trg))
+
+    def test_type_width_change_is_not_notation(self):
+        """uint64 -> uint256 отличается не только регистром: ширина типа остаётся материей."""
+        fp = {"x": "uint64(7500)"}
+        self.assertFalse(es.is_notation_only(fp, {"x": "uint256(7500)"}, "x"))
+        self.assertTrue(es.is_notation_only(fp, {"x": "Uint64(7500)"}, "x"))
+
+    def test_appearing_path_is_not_notation(self):
+        self.assertFalse(es.is_notation_only({}, {"x": "Uint64(1)"}, "x"))
+        self.assertFalse(es.is_notation_only({"x": "uint64(1)"}, {}, "x"))
+
+    def test_diff_lines_mark_notation(self):
+        lines = [ln for ln in es.diff_snapshots(self.PREV, self.CUR) if "ptc_values" in ln]
+        self.assertEqual(len(lines), 2, lines)
+        self.assertTrue(all(es.NOTATION_MARK in ln for ln in lines), lines)
+
+
+class TestS6TimingGate(unittest.TestCase):
+    """S6-сигнал раньше считался ДО фильтра меток и был открыт тому же классу ложных
+    срабатываний, что дважды поймал S5. Фиксируем, что оба сигнала теперь за одним гейтом."""
+
+    def test_notation_line_does_not_trigger_s6(self):
+        trg = es.triggers(TestS5TriggerGating.S,
+                          [f"  S6.timing.SLOT_DURATION_MS: uint64(12000) -> "
+                           f"Uint64(12000) {es.NOTATION_MARK}"])
+        self.assertFalse(any("S6 СИГНАЛ" in t for t in trg))
+
+    def test_real_timing_change_still_triggers_s6(self):
+        trg = es.triggers(TestS5TriggerGating.S,
+                          ["  S6.timing.SLOT_DURATION_MS: 12000 -> 6000"])
+        self.assertTrue(any("S6 СИГНАЛ" in t for t in trg))
+
+
 if __name__ == "__main__":
     unittest.main()

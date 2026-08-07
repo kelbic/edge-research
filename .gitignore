@@ -9,3 +9,4 @@ data/hyperlend_isolated_liqs.json
 data/epbs_monitor_state.json
 data/epbs_monitor.log
 data/epbs_monitor_cron.log
+data/epbs_monitor_state.json.bak-pre-latch

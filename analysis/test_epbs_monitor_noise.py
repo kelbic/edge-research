@@ -188,5 +188,84 @@ class TestS6TimingGate(unittest.TestCase):
         self.assertTrue(any("S6 СИГНАЛ" in t for t in trg))
 
 
+class TestTriggerLatch(unittest.TestCase):
+    """07.08: S7 сработал по-настоящему (репрайсинг вошёл в SFI). Триггер сформулирован
+    как СОСТОЯНИЕ, а не переход, поэтому без защёлки он звонил бы в TG каждые 3 дня
+    вечно. Защёлка: один звонок на состояние; смена состояния (эскалация) — новый звонок."""
+
+    S = {
+        "S1": {"status": "OK", "epbs_7732_in_sfi": True},
+        "S2": {"status": "OK", "fork_epoch": {"mainnet": es.UNSET_EPOCH},
+               "activation_rows_filled": {"Sepolia": False}, "epoch_set_somewhere": False},
+        "S3": {"status": "OK", "gloas_software_exists": False},
+        "S7": {"status": "OK", "repricing_in_sfi": True,
+               "cfi_watch": {"2780": "SFI", "8038": "SFI", "7904": "absent"}},
+    }
+
+    def test_first_time_trigger_goes_to_tg(self):
+        trg = es.triggers(self.S, [])
+        new, repeat = em.split_triggers(trg, em.trigger_fingerprints(self.S), {})
+        self.assertTrue(any("S7 ТРИГГЕР" in t for t in new))
+        self.assertEqual(repeat, [])
+
+    def test_same_state_next_run_is_silent(self):
+        fps = em.trigger_fingerprints(self.S)
+        trg = es.triggers(self.S, [])
+        new, repeat = em.split_triggers(trg, fps, {"S7": fps["S7"]})
+        self.assertEqual(new, [])                      # TG молчит
+        self.assertTrue(any("S7 ТРИГГЕР" in t for t in repeat))   # но тревога в силе
+
+    def test_escalation_rearms(self):
+        fps_old = em.trigger_fingerprints(self.S)
+        esc = json.loads(json.dumps(self.S))           # третий EIP вошёл в SFI
+        esc["S7"]["cfi_watch"]["7904"] = "SFI"
+        new, repeat = em.split_triggers(es.triggers(esc, []),
+                                        em.trigger_fingerprints(esc),
+                                        {"S7": fps_old["S7"]})
+        self.assertTrue(any("S7 ТРИГГЕР" in t for t in new))
+        self.assertEqual(repeat, [])
+
+    def test_unavailable_source_does_not_rearm(self):
+        """Просвет — не ре-арм: недоступный источник восстанавливается carry-forward,
+        отпечаток тот же, повторного звонка нет."""
+        fps = em.trigger_fingerprints(self.S)
+        prev = {"sensors": self.S, "trigger_latch": {"S7": fps["S7"]}}
+        cur = {"date": "2026-08-10",
+               "sensors": dict(self.S, S7={"status": "UNAVAILABLE"})}
+        cur = em.carry_forward(cur, prev)
+        new, repeat = em.split_triggers(es.triggers(cur["sensors"], []),
+                                        em.trigger_fingerprints(cur["sensors"]),
+                                        prev["trigger_latch"])
+        self.assertEqual(new, [])
+        self.assertEqual(len(repeat), 1)
+
+    def test_s2_epoch_latches_and_rearms_on_move(self):
+        """Именно здесь усталость от алертов дороже всего: после установки эпохи
+        S2 звонил бы каждые 3 дня до самого форка."""
+        s = json.loads(json.dumps(self.S))
+        s["S2"]["fork_epoch"]["sepolia"] = 700_000
+        s["S2"]["epoch_set_somewhere"] = True
+        fps = em.trigger_fingerprints(s)
+        new, _ = em.split_triggers(es.triggers(s, []), fps, {})
+        self.assertTrue(any("S2 ТРИГГЕР" in t for t in new))
+        latch = {k: fps[k] for k in ("S2", "S3", "S7") if k in fps}
+        new2, repeat2 = em.split_triggers(es.triggers(s, []), fps, latch)
+        self.assertEqual(new2, [])
+        self.assertEqual(len(repeat2), 3)              # S2 + S3 + S7 — все в логе
+        moved = json.loads(json.dumps(s))              # эпоху сдвинули -> звонить снова
+        moved["S2"]["fork_epoch"]["sepolia"] = 701_000
+        new3, _ = em.split_triggers(es.triggers(moved, []),
+                                    em.trigger_fingerprints(moved), latch)
+        self.assertTrue(any("S2 ТРИГГЕР" in t for t in new3))
+
+    def test_change_driven_signals_are_never_latched(self):
+        """S5/S6 поднимаются только по изменившимся ключам — они уже переходы,
+        защёлка их не касается (иначе реальный второй сдвиг тайминга пропал бы)."""
+        trg = es.triggers(self.S, ["  S6.timing.SLOT_DURATION_MS: 12000 -> 6000"])
+        fps = em.trigger_fingerprints(self.S)
+        new, _ = em.split_triggers(trg, fps, {k: v for k, v in fps.items()})
+        self.assertTrue(any("S6 СИГНАЛ" in t for t in new))
+
+
 if __name__ == "__main__":
     unittest.main()

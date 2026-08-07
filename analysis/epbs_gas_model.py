@@ -4,27 +4,49 @@
 stdlib-only, чистые функции + PARAMS-конфиг (числа EIP могут меняться до заморозки).
 
 Три режима расчёта:
-  today — действующий mainnet (интринсик 21k, floor EIP-7623 10/40 gas/байт,
-          EIP-2929/2930-цены стейт-доступа);
-  sfi   — SFI-ветвь Glamsterdam: EIP-7976 (floor 64 gas/байт uniform)
-          + EIP-7981 (data-цена access-list) + EIP-8037 (state creation);
-  cfi   — sfi + CFI-кандидаты, уже гоняемые на devnet-6/7: EIP-2780
-          (декомпозиция интринсика) + EIP-8038 (state-access repricing).
+  today       — действующий mainnet (интринсик 21k, floor EIP-7623 10/40 gas/байт,
+                EIP-2929/2930-цены стейт-доступа);
+  sfi_partial — ИСТОРИЧЕСКАЯ ветвь снапшота 12.07 (7976+7981+8037), когда репрайсинг
+                стейт-доступа был ещё CFI. Оставлена только для сверки со старым
+                отчётом; операционные выводы по ней больше не делаем;
+  sfi         — ОСНОВНАЯ (с 07.08): замороженный скоуп Glamsterdam = 7976+7981+8037
+                + 2780 (декомпозиция интринсика) + 8038 (репрайсинг стейт-доступа).
 
-Несущие числа, перепроверенные по raw.githubusercontent.com/ethereum/EIPs (все
-[P: дата фетча 2026-07-12]):
+Почему ветвь стала основной (S7, план §2): 07.08 из eip-7773.md исчезла секция
+«Considered for Inclusion» — скоуп заморожен; 2780 и 8038 стоят прямо в списке
+«EIPs Scheduled for Inclusion» (19 EIP), 7904 переведён в Informational.
+
+Несущие числа, перепроверенные по raw.githubusercontent.com/ethereum/EIPs
+[P: фетч 2026-08-07; ВСЕ пять EIP всё ещё status: Review — числа могут двигаться
+до девнет-финала, поэтому они здесь параметры, а не константы в формулах]:
   EIP-7976: TOTAL_COST_FLOOR_PER_TOKEN 16 => floor 64 gas/байт (zero==nonzero);
             tx с gas limit < intrinsic + floor невалидна (headroom-правило).
   EIP-7981: access-list data cost 64 gas/байт => 1280/адрес, 2048/ключ поверх
-            2930-цен; итог: листинг ключа (3948) на 1848 дороже холодного доступа
-            (2100), полный чистый штраф с учётом остаточного warm-доступа +1948.
-  EIP-8037: CPSB 1530; новый слот 64*1530 = 97 920 (~4.9x от 20k); новый аккаунт
-            120*1530 = 183 600 (7.34x от 25k). Дельта на новый слот +77 920.
+            2930-цен (флэт-надбавка; сама 2930-цена и floor-формула не тронуты).
+  EIP-8037: CPSB 1530; STATE_BYTES_PER_STORAGE_SET 64 => новый слот 97 920 (~4.9x
+            от 20k); STATE_BYTES_PER_NEW_ACCOUNT 120 => новый аккаунт 183 600
+            (7.34x от 25k). Дельта на новый слот +77 920.
   EIP-2780: TX_BASE_COST 12 000; вызов контракта без value: интринсик
             12 000 + COLD_ACCOUNT_ACCESS 3000 = 15 000 (было 21 000); эта же
             декомпозированная база подставляется в floor-формулу 7623/7976.
-  EIP-8038: COLD_ACCOUNT_ACCESS 2600->3000, COLD_STORAGE_ACCESS 2100->3000,
-            STORAGE_WRITE 2800->10 000, WARM_ACCESS 100, AL-цены 2400/1900->3000/3000.
+  EIP-8038: COLD_ACCOUNT_ACCESS 2600->3000 (+15%); COLD_STORAGE_ACCESS 2100 и
+            WARM_ACCESS 100 НЕ меняются (в таблице EIP +0%); STORAGE_WRITE
+            2800->10 000 (+257%); AL-цены 2400->2900 и 1900->2000.
+
+ДРЕЙФ ПАРАМЕТРОВ vs фетч 12.07 — три расхождения, все в сторону СМЯГЧЕНИЯ (ради
+этого перепроверка и делается: ветвь нельзя было поднять в основные, не сверив
+числа заново):
+  - COLD_STORAGE_ACCESS: модель держала 3000, в тексте 8038 он остался 2100.
+    Холодные чтения НЕ дорожают — это разворачивает главный вывод: репрайсинг
+    прямого пути даёт +74 200 gas на профиль ликвидации, а не +105 700 (июль);
+  - ACCESS_LIST_ADDRESS_COST 3000 -> 2900, ACCESS_LIST_STORAGE_KEY_COST 3000 -> 2000;
+  - EIP-2780 свернул TX_VALUE_COST (4244) и цену 7708-лога (1756) в один
+    TX_VALUE_COST = 6000: сумма та же, форма параметра другая.
+
+Вне профиля наших паттернов (записаны в PARAMS, в расчёт не входят — наши tx суть
+zero-value вызовы контракта, без CREATE и без переводов ETH): ACCOUNT_WRITE
+6700->9000 (для CALL с value: CALL_VALUE = ACCOUNT_WRITE + CALL_STIPEND 2300),
+CREATE_ACCESS 7000->12 000, TX_VALUE_COST 6000.
 
 Расхождение с планом: план §1 цитирует «+1,848 к холодному» — это листинг-vs-cold
 без остаточного warm (3948-2100); полный штраф по параметрам EIP = +1948/ключ.
@@ -59,85 +81,104 @@ PARAMS = {
         "storage_set": 20_000,         # SSTORE 0->x (без cold-доступа)
         "new_account": 25_000,         # GAS_NEW_ACCOUNT (без cold-доступа)
     },
-    # [P: EIP-7976, фетч 2026-07-12]
+    # [P: EIP-7976, фетч 2026-08-07 — без изменений с 12.07]
     "eip7976": {"total_cost_floor_per_token": 16},   # floor = 16*4 = 64 gas/байт uniform
-    # [P: EIP-7981, фетч 2026-07-12]
+    # [P: EIP-7981, фетч 2026-08-07 — без изменений с 12.07]
     "eip7981": {"al_data_gas_per_byte": 64, "al_address_bytes": 20, "al_key_bytes": 32},
-    # [P: EIP-8037, фетч 2026-07-12]
+    # [P: EIP-8037, фетч 2026-08-07 — без изменений с 12.07]
     "eip8037": {"cpsb": 1_530, "state_bytes_per_storage_set": 64,
                 "state_bytes_per_new_account": 120},
-    # [P: EIP-2780, фетч 2026-07-12]
-    "eip2780": {"tx_base_cost": 12_000, "tx_value_cost": 4_244, "transfer_log_cost": 1_756},
-    # [P: EIP-8038, фетч 2026-07-12]
-    "eip8038": {"cold_account_access": 3_000, "cold_storage_access": 3_000,
+    # [P: EIP-2780, фетч 2026-08-07] tx_value_cost: 4244+1756(лог 7708) свёрнуты в 6000.
+    # Вне профиля наших паттернов (zero-value вызов контракта) — не входит в расчёт.
+    "eip2780": {"tx_base_cost": 12_000, "tx_value_cost": 6_000},
+    # [P: EIP-8038, фетч 2026-08-07] ТРИ ЧИСЛА ИЗМЕНИЛИСЬ с 12.07: cold_storage_access
+    # остался 2100 (не 3000), AL-цены 2900/2000 (не 3000/3000). account_write и
+    # create_access — вне профиля (нет CREATE и переводов ETH), записаны для полноты.
+    "eip8038": {"cold_account_access": 3_000, "cold_storage_access": 2_100,
                 "storage_write": 10_000, "warm_access": 100,
-                "al_address_cost": 3_000, "al_key_cost": 3_000},
+                "al_address_cost": 2_900, "al_key_cost": 2_000,
+                "account_write": 9_000, "create_access": 12_000},
 }
 
-REGIMES = ("today", "sfi", "cfi")
+# sfi — ОСНОВНАЯ ветвь (замороженный скоуп 07.08); sfi_partial — историческая
+# ветвь 12.07 без репрайсинга стейт-доступа, только для сверки со старым отчётом.
+REGIMES = ("today", "sfi_partial", "sfi")
 
 
 # ------------------------------------------------------------- чистые функции
 
 def regime_params(params: dict, regime: str) -> dict:
-    """Эффективные скаляры газ-модели для режима today/sfi/cfi.
+    """Эффективные скаляры газ-модели для режима today/sfi_partial/sfi.
 
-    sfi = 7976+7981+8037 поверх base; cfi = sfi + 2780 + 8038. Составные цены:
-    sstore_new_slot_cold = cold-доступ (+ STORAGE_WRITE в cfi по таблице 8038)
-    + state-gas GAS_STORAGE_SET (8037); суммарная цена tx = сумма обоих
-    газ-измерений 8037, поэтому здесь измерения складываются."""
+    sfi_partial = 7976+7981+8037 поверх base; sfi (основная) = sfi_partial + 2780
+    + 8038. Составные цены: sstore_new_slot_cold = cold-доступ (+ STORAGE_WRITE в
+    sfi по таблице 8038) + state-gas GAS_STORAGE_SET (8037); суммарная цена tx =
+    сумма обоих газ-измерений 8037, поэтому здесь измерения складываются."""
     if regime not in REGIMES:
         raise ValueError(f"неизвестный режим {regime!r}")
     b = params["base"]
     e76, e81, e37 = params["eip7976"], params["eip7981"], params["eip8037"]
     e27, e38 = params["eip2780"], params["eip8038"]
-    sfi, cfi = regime in ("sfi", "cfi"), regime == "cfi"
+    # base_eips — общие для обеих ветвей (7976/7981/8037); repricing — 2780+8038,
+    # с 07.08 они в SFI, поэтому включены в основную ветвь.
+    base_eips, repricing = regime in ("sfi_partial", "sfi"), regime == "sfi"
     rp = {
         # EIP-2780: вызов контракта без value = TX_BASE + COLD_ACCOUNT (15k)
         "intrinsic_base": (e27["tx_base_cost"] + e38["cold_account_access"])
-                          if cfi else b["intrinsic_base"],
+                          if repricing else b["intrinsic_base"],
         "standard_token_cost": b["standard_token_cost"],
-        "floor_per_token": e76["total_cost_floor_per_token"] if sfi else b["floor_per_token"],
-        "floor_uniform": sfi,   # 7976: floor_tokens = 4*байт (zero==nonzero)
-        "cold_account": e38["cold_account_access"] if cfi else b["cold_account_access"],
-        "cold_storage": e38["cold_storage_access"] if cfi else b["cold_storage_access"],
-        "warm": e38["warm_access"] if cfi else b["warm_access"],
-        "al_address_cost": e38["al_address_cost"] if cfi else b["al_address_cost"],
-        "al_key_cost": e38["al_key_cost"] if cfi else b["al_key_cost"],
-        "al_data_per_byte": e81["al_data_gas_per_byte"] if sfi else 0,
+        "floor_per_token": (e76["total_cost_floor_per_token"] if base_eips
+                            else b["floor_per_token"]),
+        "floor_uniform": base_eips,   # 7976: floor_tokens = 4*байт (zero==nonzero)
+        "cold_account": e38["cold_account_access"] if repricing else b["cold_account_access"],
+        # 8038 оставил холодное чтение слота и warm-доступ на месте (2100/100) —
+        # в режиме repricing значения совпадают с today не случайно, а по тексту EIP.
+        "cold_storage": e38["cold_storage_access"] if repricing else b["cold_storage_access"],
+        "warm": e38["warm_access"] if repricing else b["warm_access"],
+        "al_address_cost": e38["al_address_cost"] if repricing else b["al_address_cost"],
+        "al_key_cost": e38["al_key_cost"] if repricing else b["al_key_cost"],
+        "al_data_per_byte": e81["al_data_gas_per_byte"] if base_eips else 0,
     }
-    # SSTORE в существующий слот (1-е изменение, cold): 5000 -> 3000+10000=13000 (8038)
-    rp["sstore_update_cold"] = (rp["cold_storage"] + e38["storage_write"]) if cfi \
+    # SSTORE в существующий слот (1-е изменение, cold): 5000 -> 2100+10000=12100 (8038)
+    rp["sstore_update_cold"] = (rp["cold_storage"] + e38["storage_write"]) if repricing \
         else b["sstore_update_cold"]
-    # SSTORE в новый слот (0->x, cold): 22 100 -> 100 020 (sfi) -> 110 920 (cfi)
-    set_cost = e37["state_bytes_per_storage_set"] * e37["cpsb"] if sfi else b["storage_set"]
+    # SSTORE в новый слот (0->x, cold): 22 100 -> 100 020 (partial) -> 110 020 (sfi)
+    set_cost = (e37["state_bytes_per_storage_set"] * e37["cpsb"] if base_eips
+                else b["storage_set"])
     rp["sstore_new_slot_cold"] = (rp["cold_storage"]
-                                  + (e38["storage_write"] if cfi else 0) + set_cost)
+                                  + (e38["storage_write"] if repricing else 0) + set_cost)
     # новый аккаунт (CALL с value в несуществующий): 27 600 -> 186 200 -> 186 600
-    acct_cost = e37["state_bytes_per_new_account"] * e37["cpsb"] if sfi else b["new_account"]
+    acct_cost = (e37["state_bytes_per_new_account"] * e37["cpsb"] if base_eips
+                 else b["new_account"])
     rp["new_account_cold"] = rp["cold_account"] + acct_cost
     return rp
 
 
-def floor_7976(calldata_bytes: int, params: dict) -> dict:
+def floor_7976(calldata_bytes: int, params: dict, regime: str = "sfi") -> dict:
     """EIP-7976: floor 64 gas/байт uniform (zero == nonzero) + headroom-правило.
 
     floor_gas = TOTAL_COST_FLOOR_PER_TOKEN(16) * 4 * байт = 64/байт
-    [P: EIP-7976, фетч 2026-07-12]. Headroom: tx с gas limit ниже
+    [P: EIP-7976, фетч 2026-08-07]. Headroom: tx с gas limit ниже
     intrinsic + floor_gas НЕВАЛИДНА — лимит обязан покрывать floor даже если
-    фактический gasUsed ниже (исполнение floor не отменяет)."""
+    фактический gasUsed ниже (исполнение floor не отменяет).
+
+    База floor-формулы зависит от ветви: в sfi_partial это константа 21 000, в
+    основной ветви 2780 заменяет её декомпозированным интринсиком (15 000 для
+    zero-value вызова контракта) — floor тот же, порог валидности ниже."""
     per_byte = params["eip7976"]["total_cost_floor_per_token"] * 4
     floor_gas = per_byte * calldata_bytes
+    intrinsic = regime_params(params, regime)["intrinsic_base"]
     return {
         "floor_per_byte": per_byte,
         "floor_gas": floor_gas,
-        "min_gas_limit": params["base"]["intrinsic_base"] + floor_gas,
+        "intrinsic_base": intrinsic,
+        "min_gas_limit": intrinsic + floor_gas,
     }
 
 
 def surcharge_8037(new_slots: int, new_accounts: int, params: dict) -> dict:
     """EIP-8037: state-creation надбавка. Новый слот 20k -> 97 920 (~4.9x),
-    новый аккаунт 25k -> 183 600 (7.34x) [P: EIP-8037, фетч 2026-07-12].
+    новый аккаунт 25k -> 183 600 (7.34x) [P: EIP-8037, фетч 2026-08-07].
     delta_vs_today — сколько ДОБАВИТСЯ к сегодняшней цене tx (на слот +77 920)."""
     e37, b = params["eip8037"], params["base"]
     slot_new = e37["state_bytes_per_storage_set"] * e37["cpsb"]        # 97 920
@@ -154,12 +195,15 @@ def surcharge_8037(new_slots: int, new_accounts: int, params: dict) -> dict:
 
 
 def al_rule_7981(params: dict, regime: str = "sfi") -> dict:
-    """EIP-7981: access-list как оптимизация мёртв [P: EIP-7981, фетч 2026-07-12].
+    """EIP-7981: access-list как оптимизация мёртв [P: EIP-7981, фетч 2026-08-07].
 
-    Листинг ключа = 2930-цена + 64*32 данные = 3948, что на 1848 дороже холодного
-    доступа (2100) — число плана; полный чистый штраф (листинг + остаточный warm
-    - сэкономленный cold) = +1948/ключ, +1180/адрес. В cfi (8038: AL-цены и cold
-    по 3000) штраф ключа растёт до +2148. Правило: ДРОП access-list."""
+    sfi_partial (2930-цены): листинг ключа = 1900 + 64*32 = 3948, на 1848 дороже
+    холодного доступа (2100) — число плана §1; полный чистый штраф (листинг +
+    остаточный warm - сэкономленный cold) = +1948/ключ, +1180/адрес.
+    sfi/основная (8038 поднял AL до 2900/2000, холодное чтение слота оставил 2100):
+    ключ 2000+2048 = 4048 => +1948 к холодному, полный штраф +2048/ключ;
+    адрес 2900+1280 = 4180 => +1180 к холодному, полный штраф +1280/адрес.
+    Вердикт «ДРОП access-list» держится в обеих ветвях."""
     rp = regime_params(params, regime)
     e81 = params["eip7981"]
     key_listing = rp["al_key_cost"] + rp["al_data_per_byte"] * e81["al_key_bytes"]
@@ -224,15 +268,20 @@ def tx_cost(pattern: dict, params: dict, regime: str = "today") -> dict:
 
 
 def deltas(pattern: dict, params: dict) -> dict:
-    """Стоимости по трём режимам + дельты (%) против today."""
+    """Стоимости по трём режимам + дельты (%) против today.
+
+    Ключи `sfi`/`d_sfi_pct` — ОСНОВНАЯ ветвь (замороженный скоуп, с репрайсингом).
+    Ключи `sfi_partial`/`d_partial_pct` — историческая ветвь 12.07, для сверки."""
     c = {r: tx_cost(pattern, params, r) for r in REGIMES}
     base = c["today"]["total"]
     return {
-        "today": base, "sfi": c["sfi"]["total"], "cfi": c["cfi"]["total"],
+        "today": base, "sfi": c["sfi"]["total"], "sfi_partial": c["sfi_partial"]["total"],
         "d_sfi_pct": 100.0 * (c["sfi"]["total"] - base) / base,
-        "d_cfi_pct": 100.0 * (c["cfi"]["total"] - base) / base,
+        "d_partial_pct": 100.0 * (c["sfi_partial"]["total"] - base) / base,
         "floor_binds_sfi": c["sfi"]["floor_binds"],
         "min_gas_limit_sfi": c["sfi"]["min_gas_limit"],
+        "floor_binds_partial": c["sfi_partial"]["floor_binds"],
+        "min_gas_limit_partial": c["sfi_partial"]["min_gas_limit"],
     }
 
 
@@ -273,55 +322,81 @@ PATTERNS = [
 
 def report() -> None:
     print("=== T4: дельты газ-стоимости tx-паттернов под Glamsterdam ===")
-    print("[P]-источники: EIP-7976/7981/8037/2780/8038, raw ethereum/EIPs, фетч 2026-07-12;")
+    print("[P]-источники: EIP-7976/7981/8037/2780/8038, raw ethereum/EIPs, фетч 2026-08-07")
+    print("             (все пять всё ещё status: Review — до девнет-финала числа могут")
+    print("             двигаться; параметры вынесены в PARAMS именно поэтому).")
     print("[S]: zero_frac=0.5, стейт-профили exec — модельные (см. PATTERNS).")
-    print("Ветви: SFI = 7976+7981+8037; CFI = SFI + 2780 + 8038 (тестируются на devnet-6/7).\n")
-    hdr = (f"{'паттерн':<20}{'today':>10}{'SFI':>11}{'dSFI%':>8}{'CFI':>11}{'dCFI%':>8}"
+    print("ОСНОВНАЯ ветвь SFI = 7976+7981+8037+2780+8038 (скоуп заморожен 07.08: секция")
+    print("«Considered for Inclusion» из eip-7773.md исчезла, репрайсинг вошёл в SFI).")
+    print("partial = историческая ветвь 12.07 без 2780/8038, только для сверки.\n")
+    hdr = (f"{'паттерн':<20}{'today':>10}{'SFI':>11}{'dSFI%':>8}{'partial':>11}{'dPart%':>8}"
            f"{'floorSFI':>9}{'minLimSFI':>11}")
     print(hdr)
     print("-" * len(hdr))
     for p in PATTERNS:
         d = deltas(p, PARAMS)
         print(f"{p['name']:<20}{d['today']:>10,}{d['sfi']:>11,}{d['d_sfi_pct']:>+8.1f}"
-              f"{d['cfi']:>11,}{d['d_cfi_pct']:>+8.1f}"
+              f"{d['sfi_partial']:>11,}{d['d_partial_pct']:>+8.1f}"
               f"{'YES' if d['floor_binds_sfi'] else 'no':>9}{d['min_gas_limit_sfi']:>11,}")
 
-    print("\n--- сверка с ожиданиями Gate 0 (pre-registered, H5) ---")
     d_direct = deltas(PATTERNS[0], PARAMS)
     d20 = deltas(PATTERNS[3], PARAMS)
     s37 = surcharge_8037(1, 0, PARAMS)
-    print(f"  прямой путь ~0%:  dSFI(liq_direct) = {d_direct['d_sfi_pct']:+.2f}%")
+    print("\n--- сверка с ожиданиями Gate 0 (pre-registered, H5) ---")
+    print(f"  прямой путь ~0%:  ДЕРЖИТСЯ ТОЛЬКО В PARTIAL — dPart(liq_direct) ="
+          f" {d_direct['d_partial_pct']:+.2f}%;")
+    print(f"                    в основной ветви {d_direct['d_sfi_pct']:+.1f}%"
+          f" (репрайсинг стейт-доступа 8038 бьёт по exec-части, а не по calldata).")
     print(f"  20KiB ~ +150%:    dSFI(swap_20KiB) = {d20['d_sfi_pct']:+.1f}% "
-          f"(today {d20['today']:,} -> {d20['sfi']:,})")
+          f"(today {d20['today']:,} -> {d20['sfi']:,}) — подтверждено, floor доминирует.")
     print(f"  новый слот:       +{s37['delta_vs_today']:,} gas "
-          f"(20k -> {s37['slot_cost']:,}, x{s37['slot_multiple']:.2f})")
+          f"(20k -> {s37['slot_cost']:,}, x{s37['slot_multiple']:.2f}) — без изменений.")
 
     al = al_rule_7981(PARAMS, "sfi")
-    al_cfi = al_rule_7981(PARAMS, "cfi")
+    al_part = al_rule_7981(PARAMS, "sfi_partial")
     d_al = deltas(PATTERNS[5], PARAMS)
     d_noal = deltas(PATTERNS[0], PARAMS)
     keep_al_cost = d_al["sfi"] - d_noal["sfi"]
-    print("\n--- свод операционных правил для monad-liquidator (mainnet-USDe трек; "
-          "пересчитать ДО активации; Base не трогать до OP-stack-форка) ---")
+    print("\n--- операционные правила L1-трека (АДРЕСАТА СЕГОДНЯ НЕТ, см. врезку ниже) ---")
     print(f" (i)   РОУТИНГ: толстые агрегаторные calldata-пути на L1 исключить из выбора"
           f" маршрута:\n       20KiB {d20['d_sfi_pct']:+.0f}% (floor биндится),"
           f" 5KiB {deltas(PATTERNS[2], PARAMS)['d_sfi_pct']:+.1f}%,"
           f" компактный 800B {deltas(PATTERNS[1], PARAMS)['d_sfi_pct']:+.1f}%"
           f" — предпочесть компактный роутинг.")
     print(f" (ii)  ПРЕ-СИД: балансы/слоты эксекьютора по целевым токенам засеять заранее:"
-          f"\n       первый приём токена = +{s37['delta_vs_today']:,} gas/слот в SFI"
+          f"\n       первый приём токена = +{s37['delta_vs_today']:,} gas/слот"
           f" (дельта паттерна {deltas(PATTERNS[4], PARAMS)['d_sfi_pct']:+.1f}%)."
           f" Операционная дисциплина, не капитал.")
     print(f" (iii) ДРОП ACCESS-LIST: листинг ключа дороже холодного доступа на"
           f" {al['key_listing_vs_cold']:,}\n       (полный штраф {al['key_net_penalty']:,}"
-          f"/ключ, {al['addr_net_penalty']:,}/адрес; в CFI {al_cfi['key_net_penalty']:,}/ключ)."
+          f"/ключ, {al['addr_net_penalty']:,}/адрес; в partial было"
+          f" {al_part['key_net_penalty']:,}/ключ)."
           f" Для AL 2+4: +{keep_al_cost:,} gas ({100 * keep_al_cost / d_noal['sfi']:+.1f}%).")
     print(f" (iv)  HEADROOM: gas limit tx обязан покрывать intrinsic + 64*байт calldata"
           f" даже если\n       ожидаемый gasUsed ниже: для 20KiB minLimit ="
           f" {d20['min_gas_limit_sfi']:,} (сегодня хватало ~{d20['today']:,}).")
-    print("\nCFI-ветвь (2780+8038, пока Considered): прямой путь ДОРОЖАЕТ"
-          f" {d_direct['d_cfi_pct']:+.1f}% за счёт репрайсинга стейт-доступа —"
-          " если S7 покажет вход 8038 в SFI, пересчёт становится основным.")
+    print(" (v)   НОВОЕ, из репрайсинга: SSTORE в существующий слот 5 000 ->"
+          f" {regime_params(PARAMS, 'sfi')['sstore_update_cold']:,}"
+          " (x2.4) —\n       профиль ликвидации с 10 записями дорожает на +71 000 gas;"
+          " холодные ЧТЕНИЯ не дорожают\n       (2100), поэтому широкий скан позиций"
+          " в одном вызове не наказывается.")
+
+    print("\n--- КОМУ ЭТИ ПРАВИЛА (проверено 07.08) ---")
+    print(" L1-трека, который они защищают, у флота сейчас НЕТ: monad-liquidator —")
+    print(" read-only/paper (live остановлен решением пользователя, STATE §15), его фокус")
+    print(" закреплён на Base, Ethereum L1 в мультичейн-скрининге отброшен (§16); USDe-")
+    print(" трек тоже на Base. Все боевые боты — на L2/альт-L1 (Base, Katana, HyperEVM,")
+    print(" World Chain), Glamsterdam их не касается до собственных форков этих цепей.")
+    print(" ⇒ Правила кладутся на полку как ЧЕК-ЛИСТ ПЕРЕД ОТКРЫТИЕМ L1-экспозиции;")
+    print(" применять сейчас нечего и не к чему. Условие расконсервации: появление")
+    print(" любого L1-mainnet трека ЛИБО OP-stack-форк, втягивающий эти EIP на Base.")
+
+    print("\n--- что изменилось vs расчёт 12.07 ---")
+    print(" Ветвь репрайсинга стала основной (S7), НО сами числа 8038 смягчились:")
+    print(" COLD_STORAGE_ACCESS остался 2100 (модель держала 3000), AL-цены 2900/2000")
+    print(" (держала 3000/3000). Репрайсинг профиля ликвидации: +74 200 gas вместо")
+    print(" +105 700 по июльской оценке — на 30% мягче. Вывод «прямой путь ~0%» из")
+    print(" Gate 0 больше НЕ верен для основной ветви: он был свойством partial.")
 
 
 def main() -> None:

@@ -141,6 +141,47 @@ def notation_only_keys(prev: dict | None, cur: dict) -> set[str]:
             if fp.get(k) != fc.get(k) and es.is_notation_only(fp, fc, k)}
 
 
+def trigger_fingerprints(sensors: dict) -> dict:
+    """Отпечаток СОСТОЯНИЯ, породившего устойчивый триггер, по сенсорам.
+
+    Триггеры S1/S2/S3/S7 сформулированы как свойства состояния («7732 вне SFI»,
+    «эпоха установлена», «репрайсинг в SFI»), а не как переход. Раз войдя, такое
+    состояние истинно ВСЕГДА — без защёлки алерт повторяется каждый прогон крона
+    (S7 с 07.08 — навсегда; S2 после установки эпохи — в самый неподходящий момент).
+    Отпечаток = то, что должно СМЕНИТЬСЯ, чтобы тревога зазвонила снова: эскалация
+    (третий EIP вошёл в SFI, эпоха переехала) даёт новый отпечаток и новый звонок.
+
+    Сенсора нет в словаре, если его источник недоступен: пропуск НЕ снимает защёлку
+    (просвет — не ре-арм). Триггеры S5/S6 сюда не входят: они и так поднимаются
+    только по факту ИЗМЕНЕНИЯ ключей, то есть уже являются переходами."""
+    out = {}
+    s1, s2, s3, s7 = sensors["S1"], sensors["S2"], sensors["S3"], sensors["S7"]
+    if s1.get("status") == "OK":
+        out["S1"] = json.dumps({"in_sfi": s1.get("epbs_7732_in_sfi")}, sort_keys=True)
+    if s2.get("status") == "OK":
+        out["S2"] = json.dumps({"epoch": s2.get("fork_epoch"),
+                                "rows": s2.get("activation_rows_filled")},
+                               sort_keys=True, ensure_ascii=False)
+        if s3.get("status") == "OK":   # S3 звонит только вместе с S2 — отпечаток общий
+            out["S3"] = json.dumps({"s2": out["S2"],
+                                    "sw": s3.get("gloas_software_exists")}, sort_keys=True)
+    if s7.get("status") == "OK":
+        out["S7"] = json.dumps(s7.get("cfi_watch"), sort_keys=True)
+    return out
+
+
+def split_triggers(trg: list[str], fps: dict, latched: dict) -> tuple[list, list]:
+    """(новые -> TG, повторные -> только лог). Повтор = отпечаток состояния совпал
+    с уже отзвонившим. Нет отпечатка (источник недоступен) — считаем новым, чтобы
+    отсутствие данных не глушило тревогу."""
+    new, repeat = [], []
+    for t in trg:
+        sensor = t[:2]
+        fp = fps.get(sensor)
+        (repeat if fp is not None and latched.get(sensor) == fp else new).append(t)
+    return new, repeat
+
+
 def key_line(prev: dict, cur: dict, k: str) -> str:
     fp, fc = es.flatten(prev.get("sensors", {})), es.flatten(cur["sensors"])
     return f"  {k}: {fp.get(k, '<нет>')} -> {fc.get(k, '<нет>')}"
@@ -183,13 +224,23 @@ def main() -> int:
                       [f"  {k}:" for k in changed if k not in inert])
     first_run = prev is None
 
+    # защёлка: устойчивый триггер звонит в TG один раз на состояние, дальше — в лог
+    fps = trigger_fingerprints(cur["sensors"])
+    latched = (prev or {}).get("trigger_latch", {})
+    trg, repeat_trg = split_triggers(trg, fps, latched)
+    cur["trigger_latch"] = {**latched,
+                            **{t[:2]: fps[t[:2]] for t in trg if t[:2] in fps}}
+
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
     json.dump(cur, open(STATE_FILE, "w"), ensure_ascii=False, indent=1)
 
     date = cur["date"]
     log(f"скан {date}: изменений={len(changed)} материальных={len(material)} "
-        f"триггеров={len(trg)} suppressed={len(changed) - len(material)} "
+        f"триггеров={len(trg)} повторных={len(repeat_trg)} "
+        f"suppressed={len(changed) - len(material)} "
         f"(из них рост схемы={len(grown)}, нотация={len(notation)})")
+    for t in repeat_trg:               # состояние то же — тревога в силе, но без звонка
+        log(f"  ТРИГГЕР В СИЛЕ (состояние не менялось, TG молчит): {t}")
     if grown:                                  # видно в логе, но без TG и без триггеров
         log(f"  новые поля сенсора (база): {', '.join(sorted(grown)[:8])}"
             f"{' …' if len(grown) > 8 else ''}")

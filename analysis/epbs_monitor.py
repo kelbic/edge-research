@@ -159,8 +159,19 @@ def trigger_fingerprints(sensors: dict) -> dict:
     if s1.get("status") == "OK":
         out["S1"] = json.dumps({"in_sfi": s1.get("epbs_7732_in_sfi")}, sort_keys=True)
     if s2.get("status") == "OK":
-        out["S2"] = json.dumps({"epoch": s2.get("fork_epoch"),
-                                "rows": s2.get("activation_rows_filled")},
+        # Отпечаток берём с СИГНАЛА, а не с сырого снимка: sensor_s2 кладёт
+        # per-network "UNAVAILABLE" при флапе одного config-URL (carry_forward это
+        # не чинит — он подменяет только сенсор целиком), а activation_rows_filled
+        # пустеет, если S1 лежал в момент сборки снапшота. По сырому снимку защёлка
+        # ре-армилась бы на каждой сетевой икоте — ровно в период после установки
+        # эпохи, ради которого она и заведена. Здесь же остаются только заданные
+        # эпохи и заполненные строки: переезд эпохи/новая сеть/новая строка ре-армят,
+        # временные пропуски — нет.
+        epochs = {net: v for net, v in (s2.get("fork_epoch") or {}).items()
+                  if isinstance(v, int) and v != es.UNSET_EPOCH}
+        rows = sorted(net for net, filled
+                      in (s2.get("activation_rows_filled") or {}).items() if filled)
+        out["S2"] = json.dumps({"epoch": epochs, "rows": rows},
                                sort_keys=True, ensure_ascii=False)
         if s3.get("status") == "OK":   # S3 звонит только вместе с S2 — отпечаток общий
             out["S3"] = json.dumps({"s2": out["S2"],

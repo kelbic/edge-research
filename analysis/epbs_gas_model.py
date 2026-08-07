@@ -58,7 +58,7 @@ CREATE_ACCESS 7000->12 000, TX_VALUE_COST 6000.
 ликвидации и свопа, вынесены в PATTERNS.
 
 Usage:
-    python3 -m analysis.epbs_gas_model report   # таблица дельт + правила monad-liquidator
+    python3 -m analysis.epbs_gas_model report   # таблица дельт + операционные правила L1-трека
 """
 from __future__ import annotations
 

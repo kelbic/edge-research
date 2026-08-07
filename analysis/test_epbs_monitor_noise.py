@@ -258,6 +258,32 @@ class TestTriggerLatch(unittest.TestCase):
                                     em.trigger_fingerprints(moved), latch)
         self.assertTrue(any("S2 ТРИГГЕР" in t for t in new3))
 
+    def test_s2_fingerprint_survives_partial_fetch_failure(self):
+        """Флап ОДНОГО config-URL не должен ре-армить S2.
+
+        `sensor_s2` пишет per-network "UNAVAILABLE" при сетевой ошибке, оставляя
+        статус сенсора OK — carry_forward такой снимок не чинит (он подменяет
+        только сенсор целиком). Отпечаток по сырому снимку дал бы ложный повторный
+        звонок на каждой икоте; отпечаток по сигналу — нет."""
+        s = json.loads(json.dumps(self.S))
+        s["S2"]["fork_epoch"]["sepolia"] = 700_000
+        s["S2"]["epoch_set_somewhere"] = True
+        fps = em.trigger_fingerprints(s)
+        latch = {k: fps[k] for k in fps}
+        wobble = json.loads(json.dumps(s))              # holesky-URL отвалился
+        wobble["S2"]["fork_epoch"]["holesky"] = "UNAVAILABLE"
+        wobble["S2"]["activation_rows_filled"] = {}     # S1 лежал при сборке
+        new, repeat = em.split_triggers(es.triggers(wobble, []),
+                                        em.trigger_fingerprints(wobble), latch)
+        self.assertEqual(new, [])                       # икота не будит
+        self.assertTrue(any("S2 ТРИГГЕР" in t for t in repeat))
+        # а вот заполнившаяся строка активации — настоящая новость, ре-арм
+        filled = json.loads(json.dumps(s))
+        filled["S2"]["activation_rows_filled"]["Sepolia"] = True
+        new2, _ = em.split_triggers(es.triggers(filled, []),
+                                    em.trigger_fingerprints(filled), latch)
+        self.assertTrue(any("S2 ТРИГГЕР" in t for t in new2))
+
     def test_change_driven_signals_are_never_latched(self):
         """S5/S6 поднимаются только по изменившимся ключам — они уже переходы,
         защёлка их не касается (иначе реальный второй сдвиг тайминга пропал бы)."""

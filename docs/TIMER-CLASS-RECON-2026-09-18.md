@@ -282,6 +282,42 @@ keccak, реализация проверена на векторах `keccak(''
 Исторически (3 года, 110 ликвидаций, 78 таймерных) хвост был жирным: максимум **$3.03M**,
 p90 $20.3k, 3 события >$100k, 19 уникальных ликвидаторов — протокол усох, механика цела.
 
+### Карточка окна 11.12.2026 — всё, что нужно сторожу (копировать отсюда)
+
+```
+termRepoId               0x7e0521c8068c45a6ee796909a5cadd78c8adbcab561ef649235d683d21547687
+TermRepoServicer         0xe53c30a308e6d7ad5c44e1dd6fb1f3ea99dfd410
+TermRepoCollateralManager0x58c7b1a91e3be97616cf79400667eed5d3ec3c09
+TermRepoLocker           0xf9c64c35b5738ab148dccd0547a8841cb37f977c
+TermRepoToken            0x467c050d3194b8374e25a0f83b9216c3eab3e7d7
+TermRepoRolloverManager  0xe9bcbb1fe69e9c89b0595912c91ea007787c9ccb
+TermEventEmitter (общий) 0xf021b31282a60528b2f47d07ce353da870be78b3
+залог  PT-reUSD-10DEC2026 0xecfafdc7741323a945a163ed068b5a3c43483957  (6 dec, expiry 10.12.2026 00:00Z)
+покупной USDC             0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48  (6 dec)
+заёмщик 1                 0x3976747b82316020a15662761c82860b9785e7f3   $1 656 760.45
+заёмщик 2                 0xd5efcd1bcb9336f4e02598e10554c696dae4ae2b   $1 157 950.24
+
+селекторы (пересчитаны своим keccak 18.09):
+  endOfRepurchaseWindow()                 0x1320834f  -> 1797001200 (11.12.2026 15:00:00Z)
+  maturityTimestamp()                                 -> 1796918400 (10.12.2026 16:00Z)
+  redemptionTimestamp()                               -> 1797004800 (11.12.2026 16:00Z)
+  getBorrowerRepurchaseObligation(address) 0x2762697d
+  totalOutstandingRepurchaseExposure()     0x9d5d2108 -> 2814710692828 (6 dec)
+  getCollateralBalance(address,address)               -> 1931411.23 / 1386740.68 PT
+  liquidatedDamages(address)               0x43551d0d -> 8.00%
+  liquidatedDamagesDueToProtocol()         0x56fdbdeb -> 2.00%
+  netExposureCapOnLiquidation()            0xe1cdd058 -> 5.00% (только ДО окна)
+  maintenanceCollateralRatios(address)                -> 1.092896
+  batchDefault(address,uint256[])          0x37843bc6 -> с 0xdEaD ревертит 0xf6aac11c DefaultsClosed()
+RPC, на котором это читалось: rpc.mevblocker.io (лимит getLogs 10 000 блоков).
+НЕ ИСПОЛЬЗОВАТЬ для нулей: rpc.flashbots.net отдал 0 логов на заведомо живом блоке 25905567;
+ethereum-rpc.publicnode.com сыпал 403 на getLogs. Позитивный контроль обязателен.
+```
+
+**Тревоги сторожа (порог назван заранее):** долг любого из двоих упал ≥$100k ⇒ окно тает;
+суммарный долг <$1M к 20.11 ⇒ окно снимается с рассмотрения; появилось событие
+`TermRepoRolloverManager` по этим заёмщикам ⇒ ролл, как у кита Midnight 27.08.
+
 ### Что НЕ доказано и почему это может обнулить всё
 
 1. **Глубина выхода reUSD на $3.04M не замерена.** Это связывающий предел. По канону
